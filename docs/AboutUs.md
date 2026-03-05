@@ -55,3 +55,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 * Role: Developer
 * Responsibilities: UI + Testing
+
+### Yik Leong
+
+<img src="images/yl.png" width="200px">
+
+[[github](http://github.com/bolasika)]
+
+* Role: Backend Developer
+* Responsibilities: Development + Testing
