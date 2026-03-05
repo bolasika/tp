@@ -11,12 +11,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ### Yik Leong
 
-<img src="images/yl.png" width="200px">
+<img src="images/bolasika.png" width="200px">
 
 [[github](http://github.com/bolasika)]
 
 * Role: Backend Developer
-* Responsibilities: Development + Testing
+* Responsibilities: Feature development & Testing
   
 ### Jane Doe
 
