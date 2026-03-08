@@ -264,11 +264,11 @@ _{Explain here how the data archiving feature will be implemented}_
 **Target user profile**:
 
 * NUS student needing to track peer details across modules, tutorials and lab
-* Has a need to manage a significant number of contacts and multiple commitments
-* Can type fast
-* Is reasonably comfortable using CLI apps
-* Prefers Desktop apps over other types
-* Prefers typing to mouse interactions
+* has a need to manage a significant number of contacts and multiple commitments
+* can type fast
+* is reasonably comfortable using CLI apps
+* prefers desktop apps to other types
+* prefers typing to mouse interactions
 
 **Value proposition**: NAB enables students to quickly organize and find saved contacts across multiple modules 
 efficiently, while providing event management, tracking, and reminders.
