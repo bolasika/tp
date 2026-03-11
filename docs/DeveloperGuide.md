@@ -337,6 +337,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
+* **NAB**: NUS Address Book, the name of our desktop application.
 * **Contacts**: A person (fellow student, friend, classmate, schoolmate) that a user has saved in NAB. A contact is typically (but not necessarily) associated with an event.
 * **Tag**: A logical label attached to a contact for association-oriented lookups and logical groupings for easier management.
 * **Event**: A contact-linked commitment or arrangement that the user has with one or more contacts (e.g. a project meeting, training session).
