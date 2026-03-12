@@ -33,9 +33,12 @@ public class FindCommand extends Command {
         model.updateFilteredPersonList(predicate);
         int count = model.getFilteredPersonList().size();
         if (count == 0) {
-            return new CommandResult(Messages.MESSAGE_PERSONS_NONE_FOUND);
+            return new CommandResult(Messages.MESSAGE_NO_PERSONS);
+        } else if (count == 1) {
+            return new CommandResult(Messages.MESSAGE_ONE_PERSON_LISTED_OVERVIEW);
+        } else {
+            return new CommandResult(String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, count));
         }
-        return new CommandResult(String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, count));
     }
 
     @Override
