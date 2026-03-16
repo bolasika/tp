@@ -267,6 +267,62 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void findPersons_emailExactMatch_returnsMatchingPerson() {
+        Person person = new PersonBuilder()
+                .withName("Email Match")
+                .withPhone("93334444")
+                .withEmail("emailmatch@example.com")
+                .build();
+        Person other = new PersonBuilder()
+                .withName("Email Match")
+                .withPhone("93335555")
+                .withEmail("other@example.com")
+                .build();
+
+        modelManager.addPerson(person);
+        modelManager.addPerson(other);
+
+        PersonInformation info = new PersonInformation(
+                new Name("Email Match"),
+                null,
+                new Email("emailmatch@example.com"),
+                null,
+                Set.of());
+
+        List<Person> matches = modelManager.findPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(person, matches.get(0));
+    }
+
+    @Test
+    public void findPersons_addressExactMatch_returnsMatchingPerson() {
+        Person person = new PersonBuilder()
+                .withName("Address Match")
+                .withPhone("94445555")
+                .withAddress("Block 123, Clementi Ave 3")
+                .build();
+        Person other = new PersonBuilder()
+                .withName("Address Match")
+                .withPhone("94446666")
+                .withAddress("Block 456, Clementi Ave 3")
+                .build();
+
+        modelManager.addPerson(person);
+        modelManager.addPerson(other);
+
+        PersonInformation info = new PersonInformation(
+                new Name("Address Match"),
+                null,
+                null,
+                new seedu.address.model.person.Address("Block 123, Clementi Ave 3"),
+                Set.of());
+
+        List<Person> matches = modelManager.findPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(person, matches.get(0));
+    }
+
+    @Test
     public void findPersons_tagsAllMatch_expectedResults() {
         Person personA = new PersonBuilder()
                 .withName("Delwyn")

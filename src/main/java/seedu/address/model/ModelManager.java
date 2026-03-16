@@ -233,34 +233,21 @@ public class ModelManager implements Model {
         if (!p.getName().equalsIgnoreCase(info.name)) {
             return false;
         }
-
         // checking phone number:
-        if (!info.phone.map(ph ->
-                ph.equals(p.getPhone()))
+        if (!info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true)) {
+            return false;
+        }
+        if (!info.email.map(em -> p.getEmail().map(e -> em.equals(e)).orElse(false))
                 .orElse(true)) {
             return false;
         }
-
-        if (!info.email.map(em ->
-                p.getEmail()
-                        .map(e ->
-                                em.equals(e))
-                        .orElse(false))
+        if (!info.address.map(ad -> p.getAddress().map(a -> ad.equals(a)).orElse(false))
                 .orElse(true)) {
             return false;
         }
-
-        if (!info.address.map(ad ->
-                p.getAddress().map(a -> ad.equals(a))
-                        .orElse(false))
-                .orElse(true)) {
-            return false;
-        }
-
         if (!info.tags.isEmpty() && !p.getTags().containsAll(info.tags)) {
             return false;
         }
-
         return true;
     }
 
