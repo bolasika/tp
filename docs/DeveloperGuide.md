@@ -246,13 +246,13 @@ The following activity diagram summarizes what happens when a user executes a ne
 **Aspect: How undo & redo executes:**
 
 * **Alternative 1 (current choice):** Saves the entire address book.
-    * Pros: Easy to implement.
-    * Cons: May have performance issues in terms of memory usage.
+  * Pros: Easy to implement.
+  * Cons: May have performance issues in terms of memory usage.
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-    * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
-    * Cons: We must ensure that the implementation of each individual command are correct.
+  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Cons: We must ensure that the implementation of each individual command are correct.
 
 _{more aspects and alternatives to be added}_
 
@@ -338,21 +338,21 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 1. User requests to add a contact.
 2. User enters the necessary contact information.
 3. NAB saves the contact into the contact list/database.
-   <br> *Use case ends.*
+<br> *Use case ends.*
 
 **Extensions**
 
 * 2a. NAB detects an existing contact number entered.
-    * 2a1. NAB requests for a different contact number.
-    * 2a2. User enters a new contact number.
-    * Steps 2a1 - 2a2 are repeated until a unique contact number is entered.
-      <br> *Use case continues from step 3.*<br><br>
+  * 2a1. NAB requests for a different contact number.
+  * 2a2. User enters a new contact number.
+  * Steps 2a1 - 2a2 are repeated until a unique contact number is entered.
+<br> *Use case continues from step 3.*<br><br>
 * 2b. NAB detects invalid contact information.
-    * 2b1. NAB requests for the correct information.
-    * 2b2. User enters the correct contact information.
-    * Steps 2b1 - 2b2 are repeated until all contact information are valid entries.
-      <br> *Use case continues from step 3.*
-      </panel>
+  * 2b1. NAB requests for the correct information.
+  * 2b2. User enters the correct contact information.
+  * Steps 2b1 - 2b2 are repeated until all contact information are valid entries.
+  <br> *Use case continues from step 3.*
+</panel>
 
 <panel header="**UC2 - Find Contact**" type="light">
 
@@ -376,7 +376,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 4b. NAB finds no available contacts matching the keyword provided.
     * 4b1. NAB informs the user that no matches were found.
       <br> *Use case ends.*
-      </panel>
+</panel>
 
 <panel header="**UC3 - Delete Contact**" type="light">
 
@@ -399,7 +399,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 3b. NAB finds no available contacts that match the name provided.
     * 3b1. NAB informs the user that no matches were found.
       <br> *Use case ends.*
-      </panel>
+</panel>
 
 <panel header="**UC4 - Adding an Event for a Contact**" type="light">
 
@@ -416,11 +416,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2a. NAB finds a duplicate event that has already been registered to the contact.
     * 2a1. NAB rejects the event from being added.
-      <br> *Use case ends.*<br><br>
+    <br> *Use case ends.*<br><br>
 * 2b. NAB is unable to find the specified contact.
     * 2b1. NAB informs the user that the contact does not exist.
-      <br> *Use case ends.*
-      </panel>
+    <br> *Use case ends.*
+</panel>
 
 <panel header="**UC5 - View Event**" type="light">
 
@@ -437,17 +437,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 1a. User requests to view events without specifying a contact name (i.e. view own events).
     * 1a1. NAB returns the user’s own event list.
-      <br> *Use case resumes from step 5.*<br><br>
+    <br> *Use case resumes from step 5.*<br><br>
 * 2a. NAB detects invalid characters in the provided name.
     * 2b1. NAB returns an error message.
-      <br> *Use case ends.*<br><br>
+    <br> *Use case ends.*<br><br>
 * 3a. NAB is unable to find a contact matching the provided name.
     * 3a1. NAB informs the user that contact does not exist.
-      <br> *Use case ends.*<br><br>
+    <br> *Use case ends.*<br><br>
 * 4a. NAB finds no events associated with the contact.
     * 4a1. NAB informs the user that there are no events associated with the contact.
-      <br> *Use case ends.*
-      </panel>
+    <br> *Use case ends.*
+</panel>
 
 <panel header="**UC6 - Filter Contact by Tag**" type="light">
 
@@ -464,11 +464,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. NAB detects invalid characters in the provided tag
     * 3a1. NAB returns an error message.
-      <br> *Use case ends.*<br><br>
+    <br> *Use case ends.*<br><br>
 * 4a. NAB finds no available contacts matching the tag(s) provided.
     * 4a1. NAB informs the user that no matches were found.
-      <br> *Use case ends.*
-      </panel>
+    <br> *Use case ends.*
+</panel>
 
 <panel header="**UC7 - Export Contacts**" type="light">
 
@@ -482,8 +482,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2a. NAB is unable to save the file to the user’s file directory.
     * 2a1. NAB informs the user of the error.
-      <br> *Use case ends.*
-      </panel>
+    <br> *Use case ends.*
+</panel>
 
 <panel header="**UC8 - Import Contacts**" type="light">
 
@@ -498,14 +498,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 1a. NAB is unable to read the file.
     * 1a1. NAB informs the user of the error.
-      <br> *Use case ends.*<br><br>
+    <br> *Use case ends.*<br><br>
 * 1b. NAB finds a contact number that already exists in the database while reading the file.
     * 1b1. NAB informs the user of the error.
     * 1b2. User acknowledges the error.
     * 1b3. NAB skips the contact information with the existing contact number and
       continues reading the rest of the file.
-      <br> *Use case ends.*
-      </panel>
+    <br> *Use case ends.*
+</panel>
 
 *{More to be added}*
 
@@ -560,7 +560,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **GUI**: Graphic User Interface is a graphics-based user interface that primarily uses mouse-clicks for user interaction (with the application), as opposed to CLI.
 * **Alias**: An alternate name a user can assign to a command that allows easier command execution while maintaining command functionality.
 * **CSV**: Comma Separated Values, a plain-text file format used to store tabular data. Specifically, this is to store the application data including contact names, phone numbers, tags, etc.
-* **Mainstream OS**: Windows, Linux, Unix, MacOS
+* **Mainstream OS**: Windows, Linux, Unix, macOS
+* **JavaScript Object Notation (JSON)**: A file format used to store and send data in a human-readable format.
+* **Java Archive (JAR)**: A file format used to compress multiple Java-related files into a single file for ease of distribution, deployment and execution.
 
 --------------------------------------------------------------------------------------------------------------------
 
