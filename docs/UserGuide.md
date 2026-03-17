@@ -22,18 +22,19 @@ NAB is a **desktop app for NUS students to manage contacts across multiple modul
 
 1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
 
-1. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar addressbook.jar` command to run the application.<br>
+1. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar addressbook.jar` command to run the application.<br><br>
    A GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
-1. Type the command in the command box and press Enter to execute it. e.g. typing **`help`** and pressing Enter will open the help window.<br>
-   Some example commands you can try:
+1. Type the command in the command box and press Enter to execute it. <br>e.g. typing **`help`** and pressing Enter will open the help window.<br>
+   
+    Some example commands you can try:
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the address book.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+   * `delete n/John Doe` : Deletes a contact with name 'John Doe' from the address book.
 
    * `clear` : Deletes all contacts.
 
@@ -52,11 +53,14 @@ NAB is a **desktop app for NUS students to manage contacts across multiple modul
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
   e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
 
+
 * Items in square brackets are optional.<br>
   e.g `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 
+
 * Items with `…`​ after them can be used multiple times including zero times.<br>
   e.g. `[t/TAG]…​` can be used as ` ` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
+
 
 * Parameters can be in any order.<br>
   e.g. if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
@@ -136,15 +140,23 @@ Examples:
 
 Deletes the specified person from the address book.
 
-Format: `delete INDEX`
+Format: `delete n/NAME [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
-* The index **must be a positive integer** 1, 2, 3, …​
+<box type="tip" seamless>
+
+**Tip:** If there are multiple contacts with the same `NAME`, utilize the other optional parameters to narrow down the
+deletion of the correct contact.
+</box>
+
+* Deletes the person with the specified `NAME`.
+* The `NAME` is case-insensitive. e.g `aLeX YeOH` will match `Alex Yeoh`
+* Only full words will be matched e.g. `Alex Yeo` will not match `Alex Yeoh`
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `delete n/Alex Yeoh` deletes the contact with a matching name.
+* Suppose there are multiple `Alex Yeoh`, a enriched search would be `delete n/Alex Yeoh t/cs2103 t/cs2105`
+
+### Adding an Event : `event add`
 
 ### Clearing all entries : `clear`
 
