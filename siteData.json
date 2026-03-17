@@ -42,6 +42,8 @@
       "headings": {
         "nab-developer-guide": "NAB Developer Guide",
         "acknowledgements": "Acknowledgements",
+        "original-source": "Original Source",
+        "ai-assisted-work": "AI-Assisted Work",
         "setting-up-getting-started": "Setting up, getting started",
         "design": "Design",
         "architecture": "Architecture",
@@ -115,6 +117,7 @@
         "listing-all-persons-list": "Listing all persons : list",
         "editing-a-person-edit": "Editing a person : edit",
         "locating-persons-by-name-find": "Locating persons by name: find",
+        "filtering-persons-by-context-filter": "Filtering persons by context : filter",
         "deleting-a-person-delete": "Deleting a person : delete",
         "clearing-all-entries-clear": "Clearing all entries : clear",
         "exiting-the-program-exit": "Exiting the program : exit",
