@@ -31,10 +31,23 @@ public class EventCommandParserTest {
     }
 
     @Test
+    public void parse_addSubcommandNoArgs_failure() {
+        assertParseFailure(parser, "add",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_viewSubcommandNoArgs_failure() {
+        assertParseFailure(parser, "view",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindEventCommand.MESSAGE_USAGE));
+    }
+
+    @Test
     public void parse_addSubcommand_success() {
         Event expectedEvent = new Event("Complete feature list", "21-02-26 1100",
                 "21-02-26 1500");
-        AddEventCommand expectedCommand = new AddEventCommand("Amy Bee", expectedEvent);
+        PersonInformation expectedInfo = new PersonInformation(new Name("Amy Bee"), null, null, null, null);
+        AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
 
         String userInput = "add l/CS2103 Meeting d/Complete feature list s/21-02-26 1100 e/21-02-26 1500 "
                 + "to/Amy Bee";
