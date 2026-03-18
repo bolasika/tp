@@ -39,6 +39,12 @@ public class AddEventCommandTest {
     }
 
     @Test
+    public void constructor_nullContact_throwsNullPointerException() {
+        Event event = new Event(VALID_DESCRIPTION, VALID_START, VALID_END);
+        assertThrows(NullPointerException.class, () -> new AddEventCommand(null, event));
+    }
+
+    @Test
     public void execute_eventAcceptedByModel_addSuccessful() throws Exception {
         Event existingEvent = new Event("Prepare slides", "20-02-26 1000", "20-02-26 1200");
         Event eventToAdd = new Event(VALID_DESCRIPTION, VALID_START, VALID_END);
@@ -72,6 +78,17 @@ public class AddEventCommandTest {
 
         assertThrows(CommandException.class,
                 String.format(AddEventCommand.MESSAGE_DUPLICATE_EVENT, eventToAdd), () ->
+                addEventCommand.execute(modelStub));
+    }
+
+    @Test
+    public void execute_contactNotFound_throwsCommandException() {
+        Event eventToAdd = new Event(VALID_DESCRIPTION, VALID_START, VALID_END);
+        AddEventCommand addEventCommand = new AddEventCommand(VALID_NAME, eventToAdd);
+        ModelStubWithNoPerson modelStub = new ModelStubWithNoPerson();
+
+        assertThrows(CommandException.class,
+                String.format(AddEventCommand.MESSAGE_CONTACT_NOT_FOUND, VALID_NAME), () ->
                 addEventCommand.execute(modelStub));
     }
 
@@ -240,6 +257,16 @@ public class AddEventCommandTest {
         @Override
         public ReadOnlyAddressBook getAddressBook() {
             return new AddressBook();
+        }
+    }
+
+    /**
+     * A Model stub that contains no matching person.
+     */
+    private class ModelStubWithNoPerson extends ModelStub {
+        @Override
+        public Person findPersonByName(Name name) {
+            return null;
         }
     }
 }
