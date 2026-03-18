@@ -28,7 +28,7 @@ public class AddEventParserTest {
         AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
 
         assertParseSuccess(parser,
-                " l/CS2103 Meeting d/Complete feature list s/" + VALID_START + " e/" + VALID_END
+                " d/Complete feature list start/" + VALID_START + " end/" + VALID_END
                         + " to/" + VALID_NAME,
                 expectedCommand);
     }
@@ -41,7 +41,7 @@ public class AddEventParserTest {
         AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
 
         assertParseSuccess(parser,
-                " l/CS2103 Meeting d/Complete feature list s/" + VALID_START + " e/" + VALID_END
+                " d/Complete feature list start/" + VALID_START + " end/" + VALID_END
                         + " to/" + VALID_NAME + " p/91234567",
                 expectedCommand);
     }
@@ -54,7 +54,7 @@ public class AddEventParserTest {
         AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
 
         assertParseSuccess(parser,
-                " l/CS2103 Meeting d/Complete feature list s/" + VALID_START + " e/" + VALID_END
+                " d/Complete feature list start/" + VALID_START + " end/" + VALID_END
                         + " to/" + VALID_NAME + " a/Blk 123 Clementi Ave",
                 expectedCommand);
     }
@@ -62,7 +62,7 @@ public class AddEventParserTest {
     @Test
     public void parse_invalidPhone_failure() {
         assertParseFailure(parser,
-                " l/CS2103 Meeting d/Complete feature list s/" + VALID_START + " e/" + VALID_END
+                " d/Complete feature list start/" + VALID_START + " end/" + VALID_END
                         + " to/" + VALID_NAME + " p/notaphone",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
     }
@@ -70,22 +70,15 @@ public class AddEventParserTest {
     @Test
     public void parse_preamblePresent_failure() {
         assertParseFailure(parser,
-                " unexpected l/CS2103 Meeting d/Complete feature list s/" + VALID_START
-                        + " e/" + VALID_END + " to/" + VALID_NAME,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
-    }
-
-    @Test
-    public void parse_missingLabelPrefix_failure() {
-        assertParseFailure(parser,
-                " d/Complete feature list s/" + VALID_START + " e/" + VALID_END + " to/" + VALID_NAME,
+                " unexpected d/Complete feature list start/" + VALID_START
+                        + " end/" + VALID_END + " to/" + VALID_NAME,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
     }
 
     @Test
     public void parse_missingToPrefix_failure() {
         assertParseFailure(parser,
-                " l/CS2103 Meeting d/Complete feature list s/" + VALID_START + " e/" + VALID_END,
+                " d/Complete feature list start/" + VALID_START + " end/" + VALID_END,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
     }
 

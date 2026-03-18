@@ -28,35 +28,35 @@ public class DeleteEventParserTest {
                 new DeleteEventCommand(expectedInfo, VALID_START, VALID_END);
 
         assertParseSuccess(parser,
-                " n/" + VALID_NAME + " s/" + VALID_START + " e/" + VALID_END,
+                " n/" + VALID_NAME + " start/" + VALID_START + " end/" + VALID_END,
                 expectedCommand);
     }
 
     @Test
     public void parse_missingNamePrefix_failure() {
         assertParseFailure(parser,
-                " s/" + VALID_START + " e/" + VALID_END,
+                " start/" + VALID_START + " end/" + VALID_END,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
     }
 
     @Test
     public void parse_missingStartPrefix_failure() {
         assertParseFailure(parser,
-                " n/" + VALID_NAME + " e/" + VALID_END,
+                " n/" + VALID_NAME + " end/" + VALID_END,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
     }
 
     @Test
     public void parse_missingEndPrefix_failure() {
         assertParseFailure(parser,
-                " n/" + VALID_NAME + " s/" + VALID_START,
+                " n/" + VALID_NAME + " start/" + VALID_START,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
     }
 
     @Test
     public void parse_duplicateNamePrefix_failure() {
         assertParseFailure(parser,
-                " n/" + VALID_NAME + " n/Bob s/" + VALID_START + " e/" + VALID_END,
+                " n/" + VALID_NAME + " n/Bob start/" + VALID_START + " end/" + VALID_END,
                 MESSAGE_DUPLICATE_FIELDS + "n/");
     }
 
@@ -73,14 +73,14 @@ public class DeleteEventParserTest {
         DeleteEventCommand expectedCommand = new DeleteEventCommand(expectedInfo, VALID_START, VALID_END);
 
         assertParseSuccess(parser,
-                " n/" + VALID_NAME + " p/91234567 s/" + VALID_START + " e/" + VALID_END,
+                " n/" + VALID_NAME + " p/91234567 start/" + VALID_START + " end/" + VALID_END,
                 expectedCommand);
     }
 
     @Test
     public void parse_invalidPhone_failure() {
         assertParseFailure(parser,
-                " n/" + VALID_NAME + " p/notaphone s/" + VALID_START + " e/" + VALID_END,
+                " n/" + VALID_NAME + " p/notaphone start/" + VALID_START + " end/" + VALID_END,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
     }
 }
