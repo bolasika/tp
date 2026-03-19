@@ -45,7 +45,8 @@ public class ImportCommand extends Command {
             + PREFIX_FILENAME + "myContacts";
 
     public static final String MESSAGE_SUCCESS = "Successfully imported list from %1$s";
-    public static final String MESSAGE_INVALID_COLUMNS_CSV = "Number of columns in CSV file do not match the expected format.";
+    public static final String MESSAGE_INVALID_COLUMNS_CSV = "Number of columns in CSV file "
+            + " do not match the expected format.";
     public static final String MESSAGE_ERROR_READING_FILE = "Error reading data from %1$s";
     public static final String MESSAGE_EMPTY_FILE = "The file %1$s is empty.";
     public static final String MESSAGE_SUCCESS_ROWS_ADDED_SKIPPED = "Successfully imported list from %1$s with "
@@ -54,6 +55,14 @@ public class ImportCommand extends Command {
     private final String importType;
     private final String filename;
 
+    /**
+     * Creates an {@code ImportCommand} object to import contact data from a CSV file
+     * identified by the specified {@code filename}, using a specific {@code importType}.
+     *
+     * @param importType The mode of import. Expected to be "overwrite" to replace
+     *                   current data, or "add" to append to existing contacts.
+     * @param filename The name of the source CSV file (excluding the .csv extension).
+     */
     public ImportCommand(String importType, String filename) {
         this.importType = importType;
         this.filename = filename;
@@ -100,7 +109,7 @@ public class ImportCommand extends Command {
      */
     private List<String> readLinesFromCsv(Path importPath) throws CommandException {
         try {
-            List<String> lines =  Files.readAllLines(importPath, StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(importPath, StandardCharsets.UTF_8);
             if (lines.isEmpty()) {
                 throw new CommandException(String.format(MESSAGE_EMPTY_FILE, filename + FILENAME_SUFFIX));
             }
@@ -149,7 +158,7 @@ public class ImportCommand extends Command {
      * Captures parsing errors to allow the import process to continue with other rows.
      * @param line A single data row from the CSV file.
      * @return An {@code Optional} containing the {@code Person} if parsing was successful,
-     * otherwise an empty {@code Optional}.
+     *         otherwise an empty {@code Optional}.
      */
     private Optional<Person> parseLineToPerson(String line) {
         try {

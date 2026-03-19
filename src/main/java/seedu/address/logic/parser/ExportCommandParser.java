@@ -27,7 +27,7 @@ public class ExportCommandParser implements Parser<ExportCommand> {
      * @param args The raw user input string following the command word.
      * @return An {@code ExportCommand} initialized with the specified export type and target filename.
      * @throws ParseException If the user input does not conform to the expected format,
-     * specifies an invalid export type, or contains illegal characters in the filename.
+     *                        specifies an invalid export type, or contains illegal characters in the filename.
      */
     public ExportCommand parse(String args) throws ParseException {
         requireNonNull(args);

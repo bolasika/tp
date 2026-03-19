@@ -23,13 +23,9 @@ public class ExportCommand extends Command {
 
     public static final String COMMAND_WORD = "export";
 
-    private static final String FILENAME_SUFFIX = ".csv";
-    private static final String NAME_COLUMN_HEADER = "Name";
-    private static final String PHONE_COLUMN_HEADER = "Phone";
-    private static final String EMAIL_COLUMN_HEADER = "Email";
-    private static final String ADDRESS_COLUMN_HEADER = "Address";
-    private static final String TAG_COLUMN_HEADER = "Tags";
-    private static final String EVENT_COLUMN_HEADER = "Events";
+    public static final String MESSAGE_SUCCESS = "Exported list to %1$s";
+
+    public static final String MESSAGE_FAILURE = "Failed to export list to %1$s";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Exports a list of contacts into a CSV formatted file for future use.\n"
@@ -40,9 +36,13 @@ public class ExportCommand extends Command {
             + PREFIX_TYPE + "all "
             + PREFIX_FILENAME + "myContacts";
 
-    public static final String MESSAGE_SUCCESS = "Exported list to %1$s";
-
-    public static final String MESSAGE_FAILURE = "Failed to export list to %1$s";
+    private static final String FILENAME_SUFFIX = ".csv";
+    private static final String NAME_COLUMN_HEADER = "Name";
+    private static final String PHONE_COLUMN_HEADER = "Phone";
+    private static final String EMAIL_COLUMN_HEADER = "Email";
+    private static final String ADDRESS_COLUMN_HEADER = "Address";
+    private static final String TAG_COLUMN_HEADER = "Tags";
+    private static final String EVENT_COLUMN_HEADER = "Events";
 
     private final String exportType;
     private final String filename;
@@ -52,7 +52,7 @@ public class ExportCommand extends Command {
      * to a CSV file named with the specified {@code filename}.
      *
      * @param exportType The scope of the export. Expected to be "all" for the entire address book,
-     * or "current" for the currently filtered list.
+     *                   or "current" for the currently filtered list.
      * @param filename The name of the target CSV file (excluding the .csv extension).
      */
     public ExportCommand(String exportType, String filename) {
