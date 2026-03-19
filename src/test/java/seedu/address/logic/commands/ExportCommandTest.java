@@ -25,12 +25,12 @@ import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
 public class ExportCommandTest {
+    @TempDir
+    public Path testFolder;
+
     private Model model;
     private Model expectedModel;
     private final String testFileName = "test_export";
-
-    @TempDir
-    public Path testFolder;
 
     private void createCsvFile(String filename, String content) throws Exception {
         Path filePath = testFolder.resolve(filename + FILENAME_SUFFIX);

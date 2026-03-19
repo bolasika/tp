@@ -20,8 +20,8 @@ public class CsvUtilTest {
 
     @Test
     public void splitCsvLine_complexRow_splitsCorrectly() {
-        String row = "\"David\",\"91234567\",\"test@example.com\",\"Blk 123, Jurong\",\"tag1;tag2\"";
-        String[] expected = {"\"David\"", "\"91234567\"", "\"test@example.com\"", "\"Blk 123, Jurong\"", "\"tag1;tag2\""};
+        String row = "\"David\",\"91234567\",\"test@d.com\",\"Blk 123, Jurong\",\"tag1;tag2\"";
+        String[] expected = {"\"David\"", "\"91234567\"", "\"test@d.com\"", "\"Blk 123, Jurong\"", "\"tag1;tag2\""};
         assertArrayEquals(expected, CsvUtil.splitCsvLine(row));
     }
 }
