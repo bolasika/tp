@@ -95,7 +95,7 @@ public class PersonTest {
         Event event = new Event("Meeting", "21-02-26 1100", "21-02-26 1500");
         events.add(event);
         Person person = new Person(ALICE.getName(), ALICE.getPhone(),
-                ALICE.getEmail(), ALICE.getAddress(), Collections.emptySet(), events);
+                ALICE.getEmail(), ALICE.getAddress(), Collections.emptySet(), events, ALICE.getPhoto());
         assertEquals(ALICE.getName(), person.getName());
         assertTrue(person.getEvents().contains(event));
     }

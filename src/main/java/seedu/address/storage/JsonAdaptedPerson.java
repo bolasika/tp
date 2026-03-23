@@ -42,7 +42,8 @@ class JsonAdaptedPerson {
      */
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("email") String email, @JsonProperty("address") String address,
+            @JsonProperty("email") String email,
+            @JsonProperty("address") String address,
             @JsonProperty("photo") String photo,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
             @JsonProperty("events") List<JsonAdaptedEvent> events) {
@@ -67,7 +68,7 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().map(email -> email.value).orElse(null);
         address = source.getAddress().map(address -> address.value).orElse(null);
-        photo = source.getPhoto().map(photo -> photo.value).orElse(null);
+        photo = source.getPhoto().map(photo -> photo.getPath()).orElse(null);
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -125,10 +126,11 @@ class JsonAdaptedPerson {
 
         final Optional<Photo> modelPhoto;
         if (photo == null) {
-            modelPhoto = Optional.empty();
+            // Scenario: No photo supplied, default to pepe
+            modelPhoto = Optional.of(new Photo());
         } else if (!Photo.isValidPhoto(photo)) {
-            // If data in JSON is corrupted, revert to display default profile photo
-            modelPhoto = Optional.of(new Photo(Photo.DEFAULT_PHOTO_PATH));
+            // Scenario: Invalid format,
+            modelPhoto = Optional.of(new Photo("data/images/corrupted_data.jpg"));
         } else {
             modelPhoto = Optional.of(new Photo(photo));
         }

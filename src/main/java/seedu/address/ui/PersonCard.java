@@ -71,17 +71,17 @@ public class PersonCard extends UiPart<Region> {
      * @param person is the Person we need to extract the Photo object from to display on the card.
      */
     public void handlePhoto(Person person) {
-        Photo photoObject = person.getPhoto().orElse(new Photo(""));
+        Photo photoObject = person.getPhoto().orElse(new Photo());
         Image profilePicture = null;
 
         try {
             if (photoObject.isDefault()) {
-                java.io.InputStream stream = this.getClass().getResourceAsStream(photoObject.value);
+                java.io.InputStream stream = this.getClass().getResourceAsStream(photoObject.getPath());
                 if (stream != null) {
                     profilePicture = new Image(stream);
                 }
             } else {
-                String fileUri = Paths.get(photoObject.value).toUri().toString();
+                String fileUri = Paths.get(photoObject.getPath()).toUri().toString();
                 profilePicture = new Image(fileUri);
             }
         } catch (Exception e) {

@@ -46,7 +46,7 @@ public class Person {
         this.address = address;
         this.tags.addAll(tags);
         this.events = new UniqueEventList();
-        this.photo = Optional.of(photo.orElse(new Photo("")));
+        this.photo = Optional.of(photo.orElse(new Photo()));
     }
 
     /**
@@ -61,7 +61,7 @@ public class Person {
         this.address = address;
         this.tags.addAll(tags);
         this.events = events;
-        this.photo = Optional.of(photo.orElse(new Photo("")));
+        this.photo = Optional.of(photo.orElse(new Photo()));
     }
 
     public Name getName() {

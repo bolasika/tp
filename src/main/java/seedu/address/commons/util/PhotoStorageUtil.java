@@ -18,7 +18,15 @@ import seedu.address.model.person.Photo;
 
 public class PhotoStorageUtil {
     private static final Logger logger = LogsCenter.getLogger(PhotoStorageUtil.class);
-    private static final String IMAGE_DIRECTORY = "data/images/";
+    private static String imageDirectory = "data/images/";
+
+    public static String getImageDirectory() {
+        return imageDirectory;
+    }
+
+    public static void setImageDirectory(String directory) {
+        imageDirectory = directory;
+    }
 
     /**
      * Copies over a file specified by the user, to the data/images/ directory of NAB.
@@ -32,7 +40,7 @@ public class PhotoStorageUtil {
         }
 
         // Returns a file object
-        Path srcPath = Paths.get(photo.value);
+        Path srcPath = Paths.get(photo.getPath());
 
         // Check existence of file and is regular file
         if (!Files.exists(srcPath) || !Files.isRegularFile(srcPath)) {
@@ -40,7 +48,7 @@ public class PhotoStorageUtil {
         }
 
         // Check if data/images directory exists, otherwise create directory
-        Path destDir = Paths.get(IMAGE_DIRECTORY);
+        Path destDir = Paths.get(imageDirectory);
         if (!Files.exists(destDir)) {
             Files.createDirectories(destDir);
             logger.info("Created default image directory at: " + destDir.toAbsolutePath());
@@ -61,7 +69,7 @@ public class PhotoStorageUtil {
         Files.copy(srcPath, fullDestDir, StandardCopyOption.REPLACE_EXISTING);
 
         // Update the photo saved in JSON
-        String relativePath = (IMAGE_DIRECTORY + uniqueFileName).replace("\\", "/");
+        String relativePath = (imageDirectory + uniqueFileName).replace("\\", "/");
         return new Photo(relativePath);
     }
 
@@ -75,7 +83,7 @@ public class PhotoStorageUtil {
             return;
         }
 
-        Path pathToDelete = Paths.get(photo.value);
+        Path pathToDelete = Paths.get(photo.getPath());
 
         try {
             Files.deleteIfExists(pathToDelete);
@@ -89,7 +97,7 @@ public class PhotoStorageUtil {
      * Clears the entire data/images directory.
      */
     public static void clearDirectory() throws IOException {
-        Path toBeDeleted = Paths.get(IMAGE_DIRECTORY);
+        Path toBeDeleted = Paths.get(imageDirectory);
 
         if (!Files.exists(toBeDeleted)) {
             return;
