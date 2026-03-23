@@ -127,7 +127,8 @@ class JsonAdaptedPerson {
         if (photo == null) {
             modelPhoto = Optional.empty();
         } else if (!Photo.isValidPhoto(photo)) {
-            throw new IllegalValueException(Photo.MESSAGE_CONSTRAINTS);
+            // If data in JSON is corrupted, revert to display default profile photo
+            modelPhoto = Optional.of(new Photo(Photo.DEFAULT_PHOTO_PATH));
         } else {
             modelPhoto = Optional.of(new Photo(photo));
         }
@@ -142,6 +143,7 @@ class JsonAdaptedPerson {
                         DUPLICATE_EVENT_MESSAGE_FORMAT, modelName.fullName, modelEvent), e);
             }
         }
+
         return person;
     }
 

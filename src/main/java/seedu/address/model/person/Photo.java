@@ -5,10 +5,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 
 public class Photo {
 
-    public static final String MESSAGE_CONSTRAINTS = "Photos should only be in .pdf, .jpg, .jpeg format";
+    public static final String MESSAGE_CONSTRAINTS = "Photos should only be in .png, .jpg, .jpeg format";
     public static final String DEFAULT_PHOTO_PATH = "/images/pepe-default.png";
     /**
-     * Path to photo must end with the extension any of the extensions .pdf, .jpg or .jpeg
+     * Path to photo must end with the extension any of the extensions .png, .jpg or .jpeg
      */
     public static final String VALIDATION_REGEX = "(?i)^.*\\.(png|jpg|jpeg)$";
     public final String value;
@@ -28,13 +28,13 @@ public class Photo {
             return;
         }
 
-        // Check Extension is .pdf .jpg or .jpeg
+        // Check Extension is .png, .jpg or .jpeg
         checkArgument(isValidPhoto(path), MESSAGE_CONSTRAINTS);
         this.value = path;
     }
 
     /**
-     * Returns true if a given string is a valid file path and the image is of the format .pdf, .jpg, .jpeg.
+     * Returns true if a given string is a valid file path and the image is of the format .png, .jpg, .jpeg.
      */
     public static boolean isValidPhoto(String test) {
         return test.matches(VALIDATION_REGEX);
@@ -53,4 +53,7 @@ public class Photo {
     public boolean isSavedLocally() {
         return this.value.startsWith("data/images/");
     }
+
+
+
 }
