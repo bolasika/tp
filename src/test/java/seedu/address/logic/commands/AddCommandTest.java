@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -37,52 +35,59 @@ import seedu.address.testutil.PersonBuilder;
 
 public class AddCommandTest {
 
-    @TempDir
-    public Path sharedTempFolder; // Simulate data/
+    @Test
+    public void execute_addPersonWithPhoto_success(@TempDir Path tempDir) throws Exception {
+        ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
 
-    private Path testFolder; // Simulate data_images
-    private Path userFolder; // Simulate user_desktop
-
-    private String originalDirectory;
-
-    @BeforeEach
-    public void setUp() throws IOException {
-        testFolder = Files.createDirectory(sharedTempFolder.resolve("data_images"));
-        userFolder = Files.createDirectory(sharedTempFolder.resolve("user_desktop"));
-
-        originalDirectory = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = testFolder.toString().replace("\\", "/") + "/";
+        String originalDir = PhotoStorageUtil.getImageDirectory();
+        String tempDirPath = tempDir.toString().replace("\\", "/") + "/";
         PhotoStorageUtil.setImageDirectory(tempDirPath);
-    }
 
-    @AfterEach
-    public void tearDown() {
-        PhotoStorageUtil.setImageDirectory(originalDirectory);
-    }
+        try {
+            Path sourceFile = tempDir.resolve("test.jpg");
+            Files.createFile(sourceFile);
+            String pathToSourceFile = sourceFile.toString().replace("\\", "/");
 
-    @Test
-    public void execute_addPersonWithPhoto_success() throws Exception {
-        ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
-        Path sourceFile = userFolder.resolve("test.jpg");
-        Files.createFile(sourceFile);
-        String pathToSourceFile = sourceFile.toString().replace("\\", "/");
+            Person validPersonWithPhoto = new PersonBuilder().withPhoto(pathToSourceFile).build();
+            CommandResult commandResult = new AddCommand(validPersonWithPhoto).execute(modelStub);
+            Person addedPerson = modelStub.personsAdded.get(0);
 
-        Person validPersonWithPhoto = new PersonBuilder().withPhoto(pathToSourceFile).build();
-        CommandResult commandResult = new AddCommand(validPersonWithPhoto).execute(modelStub);
-        Person addedPerson = modelStub.personsAdded.get(0);
-
-        assertEquals(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(addedPerson)),
-                commandResult.getFeedbackToUser());
+            assertEquals(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(addedPerson)),
+                    commandResult.getFeedbackToUser());
+        } finally {
+            PhotoStorageUtil.setImageDirectory(originalDir);
+        }
     }
 
     @Test
-    public void execute_photoCopyFails_throwsCommandException() throws CommandException {
+    public void execute_photoCopyFails_throwsCommandException(@TempDir Path tempDir) throws IOException {
         ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
-        String dummyFile = userFolder.resolve("does_not_exist.jpg")
-                .toString().replace("\\", "/");
-        Person personWithInvalidPhoto = new PersonBuilder().withPhoto(dummyFile).build();
-        AddCommand addCommand = new AddCommand(personWithInvalidPhoto);
-        assertThrows(CommandException.class, () -> addCommand.execute(modelStub));
+
+        Path appFolder = tempDir.resolve("app_storage");
+        Path userFolder = tempDir.resolve("user_desktop");
+        Files.createDirectory(appFolder);
+        Files.createDirectory(userFolder);
+
+        String originalDir = PhotoStorageUtil.getImageDirectory();
+        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
+        PhotoStorageUtil.setImageDirectory(tempDirPath);
+
+        try {
+            String dummyFile = userFolder.resolve("does_not_exist.jpg")
+                    .toString().replace("\\", "/");
+            Person personWithInvalidPhoto = new PersonBuilder().withPhoto(dummyFile).build();
+            AddCommand addCommand = new AddCommand(personWithInvalidPhoto);
+
+            // Photo does not exist
+            assertThrows(CommandException.class, () -> addCommand.execute(modelStub));
+        } finally {
+            PhotoStorageUtil.setImageDirectory(originalDir);
+        }
+    }
+
+    @Test
+    public void parse_personWithPhoto_success() {
+
     }
 
     @Test
