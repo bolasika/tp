@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +59,31 @@ public class ClearCommandTest {
         expectedModel.setAddressBook(new AddressBook());
 
         assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, expectedModel);
+    }
+
+    @Test
+    public void execute_clearDirectoryFails_throwsIoException() throws IOException {
+        Model model = new ModelManager();
+        Model expectedModel = new ModelManager();
+
+        Path dummyFile = testFolder.resolve("cannot_delete_me.jpg");
+        Files.createFile(dummyFile);
+
+        // Temporarily open a stream to file, so cannot delete
+        try (FileOutputStream fs = new FileOutputStream(dummyFile.toFile())) {
+            // Temporarily change permissions
+            testFolder.toFile().setReadable(false);
+            testFolder.toFile().setWritable(false);
+            testFolder.toFile().setExecutable(false);
+
+            try {
+                assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, expectedModel);
+            } finally {
+                testFolder.toFile().setReadable(true);
+                testFolder.toFile().setWritable(true);
+                testFolder.toFile().setExecutable(true);
+            }
+        }
     }
 
 }
