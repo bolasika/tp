@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -149,7 +150,7 @@ public class PhotoStorageUtilTest {
         testFolder.toFile().setExecutable(false);
 
         // Temporarily open a stream to file, so cannot delete
-        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(dummyFile.toFile())) {
+        try (FileOutputStream fs = new FileOutputStream(dummyFile.toFile())) {
             assertThrows(IOException.class, () -> PhotoStorageUtil.clearDirectory());
         } finally {
             testFolder.toFile().setReadable(true);
