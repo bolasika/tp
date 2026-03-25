@@ -2,8 +2,10 @@ package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +14,8 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import seedu.address.logic.Messages;
 
 public class HelpStorageUtilTest {
     private static final Path HELP_DIR = Paths.get("data/help");
@@ -50,5 +54,41 @@ public class HelpStorageUtilTest {
     public void clearDirectory_nonExistentDirectory_doesNothing() {
         assertFalse(Files.exists(HELP_DIR));
         assertDoesNotThrow(() -> HelpStorageUtil.clearDirectory());
+    }
+
+    @Test
+    public void copyOverOfflineHelp_targetFileUnwritable_logsWarning() throws IOException {
+        Files.createDirectories(HELP_DIR);
+        File targetFile = HELP_DIR.resolve("index.html").toFile();
+        targetFile.createNewFile();
+        targetFile.setWritable(false);
+
+        try {
+            HelpStorageUtil.copyOverOfflineHelp();
+        } finally {
+            targetFile.setWritable(true);
+        }
+    }
+
+    @Test
+    public void clearDirectory_directoryUnwritable_throwsAndLogsError() throws IOException {
+        Files.createDirectories(HELP_DIR);
+        Path dummyFile = HELP_DIR.resolve("test.txt");
+        Files.createFile(dummyFile);
+
+        // Remove W perms from directory
+        File dirFile = HELP_DIR.toFile();
+        File targetFile = dummyFile.toFile();
+        dirFile.setWritable(false);
+        targetFile.setWritable(false);
+        try {
+            IOException thrown = assertThrows(IOException.class, () -> {
+                HelpStorageUtil.clearDirectory();
+            });
+            assertTrue(thrown.getMessage().contains(Messages.MESSAGE_FAILED_OFFLINE_GUIDE));
+        } finally {
+            dirFile.setWritable(true);
+            targetFile.setWritable(true);
+        }
     }
 }

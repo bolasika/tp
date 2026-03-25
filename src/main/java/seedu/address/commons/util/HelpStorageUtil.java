@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.logic.Messages;
 
 /**
  * Utility class to handle the extraction and cleanup of offline help files.
@@ -68,6 +69,7 @@ public class HelpStorageUtil {
             logger.info("Successfully cleared offline help directory.");
         } catch (java.io.UncheckedIOException | IOException e) {
             logger.severe("Clearing temporary directory failed: " + userHelpDir.toAbsolutePath());
+            throw new IOException(Messages.MESSAGE_FAILED_OFFLINE_GUIDE + e.getMessage());
         }
     }
 }
