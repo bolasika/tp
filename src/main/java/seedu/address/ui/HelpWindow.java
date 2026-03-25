@@ -119,20 +119,30 @@ public class HelpWindow extends UiPart<Stage> {
     }
 
     /**
-     * Opens the offline user guide for the user
+     * Copies over resource file and opens the offline user guide for the user
      */
     @FXML
-    private void openOfflineHelp() throws IOException {
-        HelpStorageUtil.copyOverOfflineHelp();
-        Path htmlFilePath = Paths.get(USER_FILE_PATH);
-
+    private void openOfflineHelp() {
         try {
+            HelpStorageUtil.copyOverOfflineHelp();
+            Path htmlFilePath = Paths.get(USER_FILE_PATH);
+
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 URI fileUri = htmlFilePath.toUri();
-                Desktop.getDesktop().browse(fileUri);
+
+                // Create browser in new thread, otherwise will crash on linux systems
+                new Thread(() -> {
+                    try {
+                        Desktop.getDesktop().browse(fileUri);
+                    } catch (IOException e) {
+                        logger.severe("Failed to open the offline help guide: " + e.getMessage());
+                    }
+                }).start();
+            } else {
+                logger.warning("Desktop browsing not supported on this system");
             }
         } catch (IOException e) {
-            logger.severe("Failed to open the offline help guide: " + e.getMessage());
+            logger.severe("Offline help guide process failed: " + e.getMessage());
         }
     }
 }

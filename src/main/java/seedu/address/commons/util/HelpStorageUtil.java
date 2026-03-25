@@ -22,7 +22,6 @@ public class HelpStorageUtil {
      * Extracts the help files from the JAR to the local data/help directory.
      */
     public static void copyOverOfflineHelp() throws IOException {
-        // Copy from resourceHelpDirectory -> helpDirectoryString
         List<String> fileNames = List.of("index.html", "index.css", "nab_app_logo.ico");
         Path userHelpDir = Paths.get(HELP_DIR_STRING);
 
@@ -34,7 +33,8 @@ public class HelpStorageUtil {
         for (String file : fileNames) {
             try (InputStream inputStream = HelpStorageUtil.class.getResourceAsStream("/help/" + file)) {
                 if (inputStream == null) {
-                    continue;
+                    logger.severe("Could not find internal help file: /help/" + file);
+                    throw new IOException("Missing internal application resource: " + file);
                 }
 
                 Path copyTo = userHelpDir.resolve(file);
