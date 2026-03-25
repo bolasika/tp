@@ -32,7 +32,7 @@ public class PersonCardTest {
         }
     }
 
-     @Test
+    @Test
     public void personCard_constructor_displaysPersonDetailsAndIndex() {
         Person person = new PersonBuilder()
                 .withName("Alex Yeoh")
