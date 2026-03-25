@@ -1,9 +1,8 @@
 package seedu.address.ui;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
@@ -51,10 +50,9 @@ public class HelpWindow extends UiPart<Stage> {
     public HelpWindow(Stage root) {
         super(FXML, root);
         helpMessage.setText(HELP_MESSAGE);
-        helpMessage.setFont(new Font( 15));
-
+        helpMessage.setFont(new Font(15));
         localHelpMessage.setText(LOCAL_HELP_MESSAGE);
-        localHelpMessage.setFont(new Font( 15));
+        localHelpMessage.setFont(new Font(15));
     }
 
     /**
