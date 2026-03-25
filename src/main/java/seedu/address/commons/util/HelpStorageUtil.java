@@ -40,7 +40,6 @@ public class HelpStorageUtil {
 
         for (String file : fileNames) {
             try (InputStream inputStream = HelpStorageUtil.class.getResourceAsStream("/help/" + file)) {
-                // Now we can trigger this by passing a fake file name in our test!
                 if (inputStream == null) {
                     logger.severe("Could not find internal help file: /help/" + file);
                     throw new IOException(Messages.MESSAGE_MISSING_INTERNAL_RESOURCE + file);
