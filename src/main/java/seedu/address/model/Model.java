@@ -2,6 +2,7 @@ package seedu.address.model;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -103,7 +104,7 @@ public interface Model {
     /**
      * Filters the person list to show only {@code persons} and clears the event list.
      */
-    void showMatchingPersons(java.util.Set<Person> persons);
+    void showMatchingPersons(Set<Person> persons);
 
     /**
      * Return a list of correct contact(s) based on the optional parameters provided
