@@ -192,7 +192,7 @@ public class AddEventParserTest {
     }
 
     @Test
-    public void parse_emptyDescription_treatedAsNoDescription_success() {
+    public void parse_emptyDescription_success() {
         // desc/ present but whitespace-only — should be treated as absent (Optional.empty())
         PersonInformation expectedInfo = new PersonInformation(new Name(VALID_NAME), null, null, null, null);
         Event expectedEvent = new Event(new Title("Meeting"), Optional.empty(), new TimeRange(VALID_START, VALID_END));
