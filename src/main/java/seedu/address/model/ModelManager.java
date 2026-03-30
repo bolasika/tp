@@ -4,12 +4,16 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.event.Event;
@@ -25,7 +29,10 @@ public class ModelManager implements Model {
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private final SortedList<Person> sortedPersons;
     private final FilteredList<Event> filteredEvents;
+    private final Map<Person, Integer> pinnedPersons;
+    private int nextPinSequence;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -38,7 +45,10 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        sortedPersons = new SortedList<>(filteredPersons);
         filteredEvents = new FilteredList<>(this.addressBook.getEventList());
+        pinnedPersons = new HashMap<>();
+        nextPinSequence = 0;
     }
 
     public ModelManager() {
@@ -85,6 +95,8 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        pinnedPersons.clear();
+        nextPinSequence = 0;
     }
 
     @Override
@@ -101,6 +113,7 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
+        pinnedPersons.remove(target);
     }
 
     @Override
@@ -112,6 +125,11 @@ public class ModelManager implements Model {
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
         addressBook.setPerson(target, editedPerson);
+        if (pinnedPersons.containsKey(target)) {
+            int pinSequence = pinnedPersons.get(target);
+            pinnedPersons.remove(target);
+            pinnedPersons.put(editedPerson, pinSequence);
+        }
     }
 
     @Override
@@ -162,7 +180,7 @@ public class ModelManager implements Model {
      */
     @Override
     public ObservableList<Person> getFilteredPersonList() {
-        return filteredPersons;
+        return sortedPersons;
     }
 
     @Override
@@ -174,19 +192,37 @@ public class ModelManager implements Model {
     @Override
     public void showAllPersons() {
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        sortedPersons.setComparator(null);
+    }
+
+    @Override
+    public void showAllPersonsPinnedFirst() {
+        updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        sortedPersons.setComparator(createPinnedComparator());
     }
 
     @Override
     public void showPersons(Predicate<Person> predicate) {
         requireNonNull(predicate);
         updateFilteredPersonList(predicate);
+        sortedPersons.setComparator(null);
     }
 
     @Override
     public void showMatchingPersons(java.util.Set<Person> persons) {
         requireNonNull(persons);
         updateFilteredPersonList(persons::contains);
+        sortedPersons.setComparator(null);
         updateFilteredEventList(event -> false);
+    }
+
+    @Override
+    public void pinPerson(Person person) {
+        requireNonNull(person);
+        if (!addressBook.hasPerson(person)) {
+            return;
+        }
+        pinnedPersons.putIfAbsent(person, nextPinSequence++);
     }
 
     @Override
@@ -220,6 +256,7 @@ public class ModelManager implements Model {
     public void showEventsForPerson(Person person) {
         requireNonNull(person);
         updateFilteredPersonList(p -> p.equals(person));
+        sortedPersons.setComparator(null);
         updateFilteredEventList(person::hasEvent);
     }
 
@@ -259,6 +296,26 @@ public class ModelManager implements Model {
             return false;
         }
         return true;
+    }
+
+    private Comparator<Person> createPinnedComparator() {
+        return (p1, p2) -> {
+            boolean p1Pinned = pinnedPersons.containsKey(p1);
+            boolean p2Pinned = pinnedPersons.containsKey(p2);
+
+            if (p1Pinned && !p2Pinned) {
+                return -1;
+            }
+            if (!p1Pinned && p2Pinned) {
+                return 1;
+            }
+            if (p1Pinned) {
+                return Integer.compare(pinnedPersons.get(p1), pinnedPersons.get(p2));
+            }
+
+            List<Person> personList = addressBook.getPersonList();
+            return Integer.compare(personList.indexOf(p1), personList.indexOf(p2));
+        };
     }
 
 }

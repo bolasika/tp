@@ -96,6 +96,11 @@ public interface Model {
     void showAllPersons();
 
     /**
+     * Resets the filtered person list to show all persons with pinned persons first.
+     */
+    void showAllPersonsPinnedFirst();
+
+    /**
      * Filters the person list to persons matching {@code predicate}.
      * Does not modify the event list.
      */
@@ -105,6 +110,11 @@ public interface Model {
      * Filters the person list to show only {@code persons} and clears the event list.
      */
     void showMatchingPersons(Set<Person> persons);
+
+    /**
+     * Pins the given person for this application session.
+     */
+    void pinPerson(Person person);
 
     /**
      * Return a list of correct contact(s) based on the optional parameters provided
