@@ -38,12 +38,17 @@ public class AddCommandTest {
     public void execute_addPersonWithPhoto_success(@TempDir Path tempDir) throws Exception {
         ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
 
+        Path appFolder = tempDir.resolve("app_storage");
+        Path userFolder = tempDir.resolve("user_desktop");
+        Files.createDirectory(appFolder);
+        Files.createDirectory(userFolder);
+
         String originalDir = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = tempDir.toString().replace("\\", "/") + "/";
+        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
-            Path sourceFile = tempDir.resolve("test.jpg");
+            Path sourceFile = userFolder.resolve("test.jpg");
             Files.createFile(sourceFile);
             String pathToSourceFile = sourceFile.toString().replace("\\", "/");
 

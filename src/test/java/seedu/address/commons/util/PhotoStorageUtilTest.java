@@ -1,6 +1,5 @@
 package seedu.address.commons.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -110,13 +109,11 @@ public class PhotoStorageUtilTest {
     }
 
     @Test
-    public void copyPhotoToDirectory_alreadySavedPhoto_returnsSamePhoto() throws IOException {
+    public void copyPhotoToDirectory_photoInsideManagedDirectory_throwsIoException() {
         Photo localPhoto = new Photo(testFolder.resolve("existing-uuid.jpg")
-                        .toString().replace("\\", "/"));
-        Photo result = PhotoStorageUtil.copyPhotoToDirectory(localPhoto);
+                .toString().replace("\\", "/"));
 
-        // 3. Assert that it bypassed the copy logic and returned the exact same object
-        assertEquals(localPhoto.getPath(), result.getPath());
+        assertThrows(IOException.class, () -> PhotoStorageUtil.copyPhotoToDirectory(localPhoto));
     }
 
     @Test
