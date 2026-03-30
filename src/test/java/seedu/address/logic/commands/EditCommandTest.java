@@ -248,6 +248,97 @@ public class EditCommandTest {
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
 
+    @Test
+    public void execute_filterCaseInsensitiveTagFallbackWithAllTargetFields_success() {
+        Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withPhone("86667777").build();
+
+        PersonInformation targetWithDifferentTagCase = new PersonInformation(
+                personToEdit.getName(),
+                personToEdit.getPhone(),
+                personToEdit.getEmail().orElse(null),
+                personToEdit.getAddress().orElse(null),
+                Set.of(new Tag("FRIENDS")));
+
+        EditCommand editCommand = new EditCommand(targetWithDifferentTagCase, descriptor);
+
+        Person editedPerson = new PersonBuilder(personToEdit).withPhone("86667777").build();
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personToEdit, editedPerson);
+        expectedModel.updateFilteredPersonList(p -> p.equals(editedPerson));
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_filterCaseInsensitiveTagFallbackphoneMismatch_failure() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person secondPerson = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+
+        PersonInformation targetInfo = new PersonInformation(
+                firstPerson.getName(),
+                secondPerson.getPhone(),
+                null,
+                null,
+                Set.of(new Tag("FRIENDS")));
+
+        EditCommand editCommand = new EditCommand(targetInfo, new EditPersonDescriptorBuilder().withName("X").build());
+
+        assertCommandFailure(editCommand, model, Messages.MESSAGE_NO_MATCH);
+    }
+
+    @Test
+    public void execute_filterCaseInsensitiveTagFallbackemailMismatch_failure() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person secondPerson = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+
+        PersonInformation targetInfo = new PersonInformation(
+                firstPerson.getName(),
+                firstPerson.getPhone(),
+                secondPerson.getEmail().orElse(null),
+                null,
+                Set.of(new Tag("FRIENDS")));
+
+        EditCommand editCommand = new EditCommand(targetInfo, new EditPersonDescriptorBuilder().withName("X").build());
+
+        assertCommandFailure(editCommand, model, Messages.MESSAGE_NO_MATCH);
+    }
+
+    @Test
+    public void execute_filterCaseInsensitiveTagFallbackaddressMismatch_failure() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person secondPerson = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+
+        PersonInformation targetInfo = new PersonInformation(
+                firstPerson.getName(),
+                firstPerson.getPhone(),
+                firstPerson.getEmail().orElse(null),
+                secondPerson.getAddress().orElse(null),
+                Set.of(new Tag("FRIENDS")));
+
+        EditCommand editCommand = new EditCommand(targetInfo, new EditPersonDescriptorBuilder().withName("X").build());
+
+        assertCommandFailure(editCommand, model, Messages.MESSAGE_NO_MATCH);
+    }
+
+    @Test
+    public void execute_filterCaseInsensitiveTagFallbackmissingTag_failure() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+
+        PersonInformation targetInfo = new PersonInformation(
+                firstPerson.getName(),
+                firstPerson.getPhone(),
+                firstPerson.getEmail().orElse(null),
+                firstPerson.getAddress().orElse(null),
+                Set.of(new Tag("unknown")));
+
+        EditCommand editCommand = new EditCommand(targetInfo, new EditPersonDescriptorBuilder().withName("X").build());
+
+        assertCommandFailure(editCommand, model, Messages.MESSAGE_NO_MATCH);
+    }
+
     /**
          * Edit still matches against the full address book even when current list is filtered.
      */
