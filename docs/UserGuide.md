@@ -91,7 +91,7 @@ Format: `add n/NAME p/PHONE_NUMBER [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_P
 **Tip:** Can associate 0 or more tags during the add process
 </box>
 
-* Contact cannot be added if the added phone number is already registered in the address book
+* Contact cannot be added if the added phone number is already registered in the address book.
 
 Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
@@ -122,7 +122,7 @@ Format: `edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... -- [n/NAM
   * Updatable fields: `n/NAME`, `p/PHONE_NUMBER`, `e/EMAIL`, `a/ADDRESS`, `t/TAG`, `pfp/PHOTO_PATH`.
 * `n/NAME` in the target segment is required.
 * Existing values will be updated to the input values.
-* To add tags, you can specify new tags by typing `t/<tag>` in the updated field.
+* To add tags, you can specify new tags by typing `t/TAG` in the updated field.
 * To delete a specific tag, type an existing tag in the updated field.
 * You can remove all the person’s tags by typing `t/` without specifying any tags after it.
 * Tags are case-insensitive.
@@ -246,7 +246,7 @@ Examples:
 
 Delete an event for a specified person
 
-Format: `event delete title/TITLE start/START_TIME end/END_TIME n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+Format: `event delete title/TITLE start/START_DATE end/END_DATE n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 <box type="tip" seamless>
 
 **Tip:** If there are multiple contacts with the same `NAME`, utilize the other optional parameters to narrow down the
@@ -261,8 +261,8 @@ following information just after `event ... n/NAME`: Phone number, Email, Addres
 * The date time format for start/ and end/ is `YYYY-MM-DD HHmm` or `DD-MM-YYYY HHmm`
 
 Examples:
-* `event delete title/Meeting start/2026-03-12 1100 end/2026-03-12 2359 n/David Li` deletes the event that titled Meeting which starts at 12 March 2026 1100 and ends at 12 April 2026 2359 assigned to David Li.
-* Suppose there are multiple `David Li`, an enriched search would be `event delete title/Meeting start/2026-03-12 1100 end/2026-03-12 2359 n/David Li p/99272758`
+* `event delete title/Meeting start/2026-03-12 1100 end/2026-04-12 2359 n/David Li` deletes the event that titled Meeting which starts at 12 March 2026 1100 and ends at 12 April 2026 2359 assigned to David Li.
+* Suppose there are multiple `David Li`, an enriched search would be `event delete title/Meeting start/2026-03-12 1100 end/2026-04-12 2359 n/David Li p/99272758`
 
 ### Exiting the program : `exit`
 
@@ -272,7 +272,7 @@ Format: `exit`
 
 ### Exporting Contacts : `export`
 
-Exports a list of contacts into a CSV formatted file
+Exports a list of contacts into a CSV formatted file.
 
 Format: `export t/EXPORT_TYPE f/FILENAME`
 
@@ -288,12 +288,12 @@ Examples:
 
 ### Importing Contacts : `import`
 
-Imports a list of contacts from a CSV formatted file
+Imports a list of contacts from a CSV formatted file.
 
 Format: `import t/IMPORT_TYPE f/FILENAME`
 
-* `EXPORT_TYPE` dictates the data is imported. Expected inputs are `add`
-(appends the contacts from the list to existing address book or `overwrite` 
+* `IMPORT_TYPE` dictates how the data is imported. Expected inputs are `add`
+(appends the contacts from the list to existing address book) or `overwrite` 
 (replaces all the current address book information with contacts from the list).
 * `FILENAME` dictates the name of the source CSV file. Do not include the `.csv` extension in the input
 * The file to be imported must be located in the same directory as your current AddressBook data file.
@@ -346,14 +346,14 @@ Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **Add**    | `add n/NAME p/PHONE_NUMBER [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague pfp/images/james.jpg`
 **Clear**  | `clear`
-**Delete** | `delete n/NAME [p/PHONE_NUMBER  [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `delete n/Alex Yeoh t/cs2103 t/cs2105`
-**Edit**   | `edit n/NAME [p/PHONE_NUMBER ] [e/EMAIL] [a/ADDRESS] [t/TAG]... -- [n/NAME] [p/PHONE_NUMBER ] [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]`<br> e.g.,`edit n/James Lee e/jameslee@example.com -- t/CS2100 pfp/images/james.jpg`
-**Event Add** | `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE to/NAME [p/PHONE_NUMBER ] [e/EMAIL] [a/ADDRESS] [t/TAG]`<br> e.g., `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 to/David Li`
-**Event Delete** | `event delete title/TITLE start/START_TIME end/END_TIME n/NAME [p/PHONE_NUMBER ] [e/EMAIL] [a/ADDRESS] [t/TAG]`<br> e.g., `event delete title/Meeting start/2026-03-12 1100 end/2026-03-12 2359 n/David Li`
-**Event View** | `event view n/NAME [p/PHONE_NUMBER ] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `event view n/Bernice Yu`
+**Delete** | `delete n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `delete n/Alex Yeoh t/cs2103 t/cs2105`
+**Edit**   | `edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... -- [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]`<br> e.g.,`edit n/James Lee e/jameslee@example.com -- t/CS2100 pfp/images/james.jpg`
+**Event Add** | `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE to/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 to/David Li`
+**Event Delete** | `event delete title/TITLE start/START_DATE end/END_DATE n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `event delete title/Meeting start/2026-03-12 1100 end/2026-04-12 2359 n/David Li`
+**Event View** | `event view n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `event view n/Bernice Yu`
 **Exit**   | `exit`
 **Filter** | `filter t/TAG[, TAG]...`<br> e.g., `filter t/friends`
-**Find**   | `find n/NAME [p/PHONE_NUMBER ] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `find n/James Jake p/67676969`
+**Find**   | `find n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `find n/James Jake p/67676969`
 **Help**   | `help`
 **List**   | `list`
 **Export**   | `export t/EXPORT_TYPE f/FILENAME`<br> e.g., `export t/all f/save_file`
