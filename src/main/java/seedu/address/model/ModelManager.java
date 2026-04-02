@@ -5,6 +5,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -183,7 +184,7 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public void showMatchingPersons(java.util.Set<Person> persons) {
+    public void showMatchingPersons(Set<Person> persons) {
         requireNonNull(persons);
         updateFilteredPersonList(persons::contains);
         updateFilteredEventList(event -> false);
