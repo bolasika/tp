@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CsvUtil.unwrapValue;
+import static seedu.address.logic.parser.ExportCommandParser.PREFIX_TYPE;
 import static seedu.address.logic.parser.ImportCommandParser.PREFIX_FILENAME;
 
 import java.io.IOException;
@@ -10,8 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,8 +47,10 @@ public class ImportCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Imports a list of contacts from a CSV formatted file.\n"
             + "Parameters: "
+            + PREFIX_TYPE + "IMPORT TYPE "
             + PREFIX_FILENAME + "FILENAME\n"
             + "Example: " + COMMAND_WORD + " "
+            + PREFIX_TYPE + "add "
             + PREFIX_FILENAME + "myContacts";
 
     public static final String MESSAGE_SUCCESS = "Successfully imported list from %1$s";
@@ -144,9 +149,10 @@ public class ImportCommand extends Command {
      */
     private int processImportedLinesFromCsv(Model model, List<String> lines) throws CommandException {
         int added = 0;
+        Map<Integer, Event> eventMap = new HashMap<>();
 
         for (int i = 1; i < lines.size(); i++) {
-            Optional<Person> person = parseLineToPerson(lines.get(i));
+            Optional<Person> person = parseLineToPerson(lines.get(i), eventMap);
 
             if (person.isPresent() && !model.hasPerson(person.get())) {
                 model.addPerson(person.get());
@@ -164,9 +170,9 @@ public class ImportCommand extends Command {
      * @return An {@code Optional} containing the {@code Person} if parsing was successful,
      *         otherwise an empty {@code Optional}.
      */
-    private Optional<Person> parseLineToPerson(String line) {
+    private Optional<Person> parseLineToPerson(String line, Map<Integer, Event> eventMap) {
         try {
-            return Optional.of(createPersonFromCsvRow(line));
+            return Optional.of(createPersonFromCsvRow(line, eventMap));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
@@ -179,12 +185,12 @@ public class ImportCommand extends Command {
      * @param row A single comma-separated string from the CSV file.
      * @return A {@code Person} object populated with the data from the row.
      */
-    private Person createPersonFromCsvRow(String row) {
+    private Person createPersonFromCsvRow(String row, Map<Integer, Event> eventMap) {
         String[] columns = CsvUtil.splitCsvLine(row);
         validateColumnCount(columns);
 
         Person person = populatePersonInfo(columns);
-        populateEventInfo(person, unwrapValue(columns[5]));
+        populateEventInfo(person, unwrapValue(columns[5]), eventMap);
 
         return person;
     }
@@ -232,8 +238,8 @@ public class ImportCommand extends Command {
      * @param p The {@code Person} object to receive the events.
      * @param eventString The raw, semicolon-separated event string from the CSV.
      */
-    private void populateEventInfo(Person p, String eventString) {
-        List<Event> events = parseEvents(eventString);
+    private void populateEventInfo(Person p, String eventString, Map<Integer, Event> eventMap) {
+        List<Event> events = parseEvents(eventString, eventMap);
         events.forEach(p::addEvent);
     }
 
@@ -275,7 +281,7 @@ public class ImportCommand extends Command {
      * @param eventString The raw string containing events.
      * @return A {@code List} of {@code Event} objects. Returns an empty list if the input is empty or malformed.
      */
-    List<Event> parseEvents(String eventString) {
+    List<Event> parseEvents(String eventString, Map<Integer, Event> eventMap) {
         List<Event> events = new ArrayList<>();
 
         if (eventString == null || eventString.trim().isEmpty()) {
@@ -285,23 +291,46 @@ public class ImportCommand extends Command {
         String[] eventEntries = eventString.split(";");
 
         for (String entry : eventEntries) {
-            String[] details = entry.trim().split("\\|", 4);
+            String[] details = entry.trim().split("\\|", -1);
+            if (details.length != 6) {
+                continue;
+            }
 
-            if (details.length == 4) {
+            try {
                 String titleStr = details[0].trim();
                 String descStr = details[1].trim();
                 String startStr = details[2].trim();
                 String endStr = details[3].trim();
+                String linkedCountStr = details[4].trim();
+                String eventIdStr = details[5].trim();
 
-                if (!titleStr.isEmpty() && !startStr.isEmpty() && !endStr.isEmpty()) {
-                    Title title = new Title(titleStr);
-                    Optional<Description> desc = descStr.isEmpty()
-                            ? Optional.empty()
-                            : Optional.of(new Description(descStr));
-                    TimeRange timeRange = new TimeRange(startStr, endStr);
-
-                    events.add(new Event(title, desc, timeRange));
+                if (titleStr.isEmpty() || startStr.isEmpty() || endStr.isEmpty() || eventIdStr.isEmpty()) {
+                    continue;
                 }
+
+                int linkedCount = Integer.parseInt(linkedCountStr);
+                int eventId = Integer.parseInt(eventIdStr);
+                if (linkedCount <= 0) {
+                    continue;
+                }
+
+                Title title = new Title(titleStr);
+                Optional<Description> desc = descStr.isEmpty()
+                        ? Optional.empty()
+                        : Optional.of(new Description(descStr));
+                TimeRange timeRange = new TimeRange(startStr, endStr);
+
+                Event parsedEvent = new Event(title, desc, timeRange, linkedCount);
+                Event existingEvent = eventMap.get(eventId);
+
+                if (existingEvent == null) {
+                    eventMap.put(eventId, parsedEvent);
+                    events.add(parsedEvent);
+                } else if (existingEvent.isSameEvent(parsedEvent)) {
+                    events.add(existingEvent);
+                }
+            } catch (IllegalArgumentException e) {
+                // Skip malformed event entries and continue with the rest of the row
             }
         }
 
@@ -326,7 +355,8 @@ public class ImportCommand extends Command {
         }
 
         ImportCommand otherImportCommand = (ImportCommand) other;
-        return filename.equals(otherImportCommand.filename);
+        return importType.equals(otherImportCommand.importType)
+                && filename.equals(otherImportCommand.filename);
     }
 
     /**
