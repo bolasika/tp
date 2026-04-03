@@ -211,8 +211,13 @@ public class ImportCommand extends Command {
     private Person populatePersonInfo(String[] columns) {
         Name name = new Name(unwrapValue(columns[0]));
         Phone phone = new Phone(unwrapValue(columns[1]));
-        Optional<Email> email = Optional.of(new Email(unwrapValue(columns[2])));
-        Optional<Address> address = Optional.of(new Address(unwrapValue(columns[3])));
+
+        String emailStr = unwrapValue(columns[2]);
+        Optional<Email> email = emailStr.isEmpty() ? Optional.empty() : Optional.of(new Email(emailStr));
+
+        String addressStr = unwrapValue(columns[3]);
+        Optional<Address> address = addressStr.isEmpty() ? Optional.empty() : Optional.of(new Address(addressStr));
+
         Set<Tag> tags = parseTags(unwrapValue(columns[4]));
 
         String photoStr = unwrapValue(columns[6]);
