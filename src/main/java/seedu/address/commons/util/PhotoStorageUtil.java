@@ -35,7 +35,12 @@ public class PhotoStorageUtil {
     }
 
     public static void setImageDirectory(String directory) {
-        imageDirectory = directory;
+        String formattedDirectoryPath = directory.replace("\\", "/");
+        imageDirectory = formattedDirectoryPath.endsWith("/") ? formattedDirectoryPath : formattedDirectoryPath + "/";
+    }
+
+    public static String formatPath(Path path) {
+        return path.toString().replace("\\", "/");
     }
 
     /**
@@ -115,8 +120,8 @@ public class PhotoStorageUtil {
      * @return photo object that is tied to a person
      */
     private static Photo createRelativePhoto(String uniqueFileName) {
-        String relativePath = Paths.get(imageDirectory + uniqueFileName).toString().replace("\\", "/");
-        return new Photo(relativePath);
+        Path relativePath = Paths.get(imageDirectory, uniqueFileName);
+        return new Photo(formatPath(relativePath));
     }
 
     /**
