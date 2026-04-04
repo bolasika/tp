@@ -25,6 +25,8 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.PinCommand;
+import seedu.address.logic.commands.UnpinCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.event.Description;
 import seedu.address.model.event.Event;
@@ -132,6 +134,22 @@ public class AddressBookParserTest {
 
         String doubleTag = FilterCommand.COMMAND_WORD + " t/friends, colleagues";
         assertTrue(parser.parseCommand(doubleTag) instanceof FilterCommand);
+    }
+
+    @Test
+    public void parseCommand_pin() throws Exception {
+        PinCommand command = (PinCommand) parser.parseCommand(
+                PinCommand.COMMAND_WORD + " " + PREFIX_NAME + "John Doe");
+        assertEquals(new PinCommand(new PersonInformation(new Name("John Doe"), null, null, null, null)),
+                command);
+    }
+
+    @Test
+    public void parseCommand_unpin() throws Exception {
+        UnpinCommand command = (UnpinCommand) parser.parseCommand(
+                UnpinCommand.COMMAND_WORD + " " + PREFIX_NAME + "John Doe");
+        assertEquals(new UnpinCommand(new PersonInformation(new Name("John Doe"), null, null, null, null)),
+                command);
     }
 
     @Test

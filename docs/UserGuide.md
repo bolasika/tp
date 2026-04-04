@@ -66,7 +66,7 @@ NAB is a **desktop app for NUS students to manage contacts across multiple modul
   e.g. if the command specifies `help 123`, it will be interpreted as `help`.
 
 * Tags are case-insensitive. t/Friends and t/friends are treated as 1 unique tag. Multiple use of the same tags with different case sensitivity should not be used.
-e.g `find n/John Doe t/Friends t/friends` 
+e.g `find n/John Doe t/Friends t/friends`
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </box>
@@ -171,6 +171,34 @@ Examples:
 * `filter t/friends` finds all contacts that are tagged `friends`
 * `filter t/cs2103, cs2105, cs2109s` finds all contacts that have any of these tags.
 
+### Pinning a person : `pin`
+
+Pins the person identified by their name.
+
+Format: `pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+
+* Pinned persons are shown first when the `list` command is used.
+* The `NAME` is case-insensitive. e.g. `aLeX YeOH` will match `Alex Yeoh`
+* Only full words will be matched e.g. `Alex Yeo` will not match `Alex Yeoh`
+* Order of parameters does not matter.
+
+Examples:
+* `pin n/John Doe` pins John Doe when the name uniquely identifies the contact.
+* `pin n/John Doe p/91234567` pins the matching John Doe contact by name and phone number.
+
+### Unpinning a person : `unpin`
+
+Unpins the person identified by their name.
+
+Format: `unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+
+* The `NAME` is case-insensitive. e.g. `aLeX YeOH` will match `Alex Yeoh`
+* Only full words will be matched e.g. `Alex Yeo` will not match `Alex Yeoh`
+* Order of parameters does not matter.
+
+Examples:
+* `unpin n/John Doe` unpins John Doe when the name uniquely identifies the contact.
+* `unpin n/John Doe p/91234567` unpins the matching John Doe contact by name and phone number.
 ### Assigning tag(s) to person(s) : `tag`
 
 Assigns one or more tags to one or more contacts in one command.
@@ -254,7 +282,7 @@ Format: `event view n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
 <box type="tip" seamless>
 
-**Tip:** If there are multiple contacts with the same `NAME`, utilize the other optional parameters to 
+**Tip:** If there are multiple contacts with the same `NAME`, utilize the other optional parameters to
 view the events of the correct contact. This can be done by supplying any of the
 following information just after `event view n/NAME`: Phone number, Email, Address or Tag.
 
@@ -318,7 +346,7 @@ Imports a list of contacts from a CSV formatted file.
 Format: `import t/IMPORT_TYPE f/FILENAME`
 
 * `IMPORT_TYPE` dictates how the data is imported. Expected inputs are `add`
-(appends the contacts from the list to existing address book) or `overwrite` 
+(appends the contacts from the list to existing address book) or `overwrite`
 (replaces all the current address book information with contacts from the list).
 * `FILENAME` dictates the name of the source CSV file. Do not include the `.csv` extension in the input
 * The file to be imported must be located in the same directory as your current AddressBook data file.
@@ -378,6 +406,8 @@ Action     | Format, Examples
 **Event View** | `event view n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `event view n/Bernice Yu`
 **Exit**   | `exit`
 **Filter** | `filter t/TAG[, TAG]...`<br> e.g., `filter t/friends`
+**Pin**    | `pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `pin n/John Doe p/91234567`
+**Unpin**  | `unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `unpin n/John Doe p/91234567`
 **Find**   | `find n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `find n/James Jake p/67676969`
 **Help**   | `help`
 **List**   | `list`
