@@ -64,7 +64,8 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_photoCopyFails_throwsCommandException(@TempDir Path tempDir) throws IOException {
+    public void execute_photoCopyFails_throwsCommandException(@TempDir Path tempDir)
+            throws IOException {
         ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
 
         Path appFolder = tempDir.resolve("app_storage");
@@ -77,8 +78,8 @@ public class AddCommandTest {
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
-            String dummyFile = userFolder.resolve("does_not_exist.jpg")
-                    .toString().replace("\\", "/");
+            String dummyFile = userFolder.resolve("does_not_exist.jpg").toString().replace("\\",
+                    "/");
             Person personWithInvalidPhoto = new PersonBuilder().withPhoto(dummyFile).build();
             AddCommand addCommand = new AddCommand(personWithInvalidPhoto);
 
@@ -241,7 +242,17 @@ public class AddCommandTest {
         }
 
         @Override
+        public void showPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void showEventsForPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void showNoEvents() {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -264,18 +275,22 @@ public class AddCommandTest {
         public void setEvent(Event target, Event editedEvent) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public Event linkPersonToEvent(Event eventToAdd) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public Event unlinkPersonFromEvent(Event eventToUnlink) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public boolean hasOverlappingEvent(Event event) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public ObservableList<Event> getFilteredEventList() {
             throw new AssertionError("This method should not be called.");
@@ -324,7 +339,8 @@ public class AddCommandTest {
         }
 
         @Override
-        public void showAllPersons() {}
+        public void showAllPersons() {
+        }
 
         @Override
         public ReadOnlyAddressBook getAddressBook() {
