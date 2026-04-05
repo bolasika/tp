@@ -106,14 +106,7 @@ public class EditCommand extends Command {
             if (personToEdit.getPhoto().isPresent()) {
                 Photo oldPhoto = personToEdit.getPhoto().get();
                 if (!oldPhoto.equals(newPhoto)) {
-                    try {
-                        // Only delete if this oldPhoto is not used by other contacts
-                        if (!model.isPhotoShared(oldPhoto, personToEdit)) {
-                            PhotoStorageUtil.deletePhoto(oldPhoto);
-                        }
-                    } catch (IOException e) {
-                        throw new CommandException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage());
-                    }
+                    CommandUtil.safelyDeletePhoto(model, personToEdit, oldPhoto);
                 }
             }
         }

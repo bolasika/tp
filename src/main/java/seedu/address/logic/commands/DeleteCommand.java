@@ -7,18 +7,16 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import seedu.address.commons.util.PhotoStorageUtil;
+import seedu.address.commons.util.CommandUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonInformation;
-import seedu.address.model.person.Photo;
 
 /**
  * Deletes a person identified using it's displayed name from the address book.
@@ -73,17 +71,12 @@ public class DeleteCommand extends Command {
         }
 
         Person personToDelete = listOfPersonToDelete.get(0);
-        try {
-            // Scenario : Only attempt to delete photo if isPresent and not shared by other contacts
-            if (personToDelete.getPhoto().isPresent()) {
-                Photo photoToDelete = personToDelete.getPhoto().get();
-                if (!model.isPhotoShared(photoToDelete, personToDelete)) {
-                    PhotoStorageUtil.deletePhoto(photoToDelete);
-                }
-            }
-        } catch (IOException e) {
-            throw new CommandException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage());
+
+        // Scenario : Only attempt to delete photo if isPresent and not shared by other contacts
+        if (personToDelete.getPhoto().isPresent()) {
+            CommandUtil.safelyDeletePhoto(model, personToDelete, personToDelete.getPhoto().get());
         }
+
         model.deletePerson(personToDelete);
         return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
     }
