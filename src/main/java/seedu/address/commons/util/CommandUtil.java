@@ -17,6 +17,7 @@ import seedu.address.model.person.Photo;
 public final class CommandUtil {
     private CommandUtil() {
         // utility class
+        throw new AssertionError("This class should not be instantiated.");
     }
 
     /**

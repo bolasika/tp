@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,21 @@ import seedu.address.model.person.PersonInformation;
 import seedu.address.testutil.PersonBuilder;
 
 public class CommandUtilTest {
+
+    @Test
+    public void constructor_isPrivate_cannotBeInvoked() throws Exception {
+        Constructor<CommandUtil> constructor = CommandUtil.class.getDeclaredConstructor();
+        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+        constructor.setAccessible(true);
+
+        try {
+            constructor.newInstance();
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            assertTrue(cause instanceof AssertionError);
+            assertEquals("This class should not be instantiated.", cause.getMessage());
+        }
+    }
 
     @Test
     public void targetPerson_singleMatch_returnsPerson() throws Exception {
