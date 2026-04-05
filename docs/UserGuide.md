@@ -18,15 +18,15 @@ NAB is a **desktop app for NUS students to manage contacts across multiple modul
 1. Ensure you have Java `17` or above installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/AY2526S2-CS2103-F08-4/tp/releases).
+2. Download the latest `.jar` file from [here](https://github.com/AY2526S2-CS2103-F08-4/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+3. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
 
-1. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar NAB.jar` command to run the application.<br><br>
+4. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar NAB.jar` command to run the application.<br><br>
    A GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
-1. Type the command in the command box and press Enter to execute it. <br> e.g. typing **`help`** and pressing Enter will open the help window.<br>
+5. Type the command in the command box and press Enter to execute it. <br> e.g. typing **`help`** and pressing Enter will open the help window.<br>
 
     Some example commands you can try:
 
@@ -40,7 +40,7 @@ NAB is a **desktop app for NUS students to manage contacts across multiple modul
 
    * `exit` : Exits the app.
 
-1. Refer to the [Features](#features) below for details of each command.
+6. Refer to the [Features](#features) below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -118,6 +118,10 @@ Shows a message explaining how to access the help page.
 
 Format: `help`
 
+* The help window provides quick access to:
+  * the online User Guide
+  * the local offline help page
+* Use this command when you need a quick reference for NAB’s features and commands.
 
 ### Adding a person: `add`
 
@@ -357,40 +361,45 @@ Exits the program.
 
 Format: `exit`
 
-### Exporting Contacts: `export`
+### Exporting contacts: `export`
 
-Exports a list of contacts into a CSV formatted file.
+Exports contacts from NAB into a CSV file.
 
 Format: `export t/EXPORT_TYPE f/FILENAME`
 
-* `EXPORT_TYPE` dictates the scope of the export. Expected inputs are `all`
-(exports the entire address book) or `current` (exports the currently filtered list)
-* `FILENAME` dictates the name of the target CSV file. Do not include the `.csv` extension in the input.
-* The exported file is saved in the same directory that contains the current NAB data file.
+* `EXPORT_TYPE` specifies which contacts to export:
+  * `all` exports every contact in NAB
+  * `current` exports only the contacts currently shown in the contact list
+* `FILENAME` specifies the name of the exported file.
+  Enter the file name without `.csv`, as NAB automatically appends the `.csv` extension for you.
+  For example, `f/backup` creates a file named `backup.csv`.
+* The exported file is saved in the same directory as the current NAB data file.
 * Order of parameters does not matter.
 
 Examples:
-* Exports all contacts stored in NAB into a CSV file : `export t/all f/save_file`
-* Exports contacts from the currently filtered list : `export t/current f/save_file`
+* `export t/all f/save_file` exports all contacts in NAB to `save_file.csv`
+* `export t/current f/save_file` exports only the currently displayed contacts to `save_file.csv`
 
-### Importing Contacts: `import`
+### Importing contacts: `import`
 
-Imports a list of contacts from a CSV formatted file.
+Imports contacts from a CSV file into NAB.
 
 Format: `import t/IMPORT_TYPE f/FILENAME`
 
-* `IMPORT_TYPE` dictates how the data is imported. Expected inputs are `add`
-(appends the contacts from the list to existing address book) or `overwrite`
-(replaces all the current address book information with contacts from the list).
-* `FILENAME` dictates the name of the source CSV file. Do not include the `.csv` extension in the input.
-* The file to be imported must be located in the same directory as your current AddressBook data file.
-* Any contacts in the CSV file that already exist in your current address book will be skipped to prevent duplicates.
-* Rows in the CSV that are malformed or have missing mandatory fields will be safely skipped.
+* `IMPORT_TYPE` specifies how the CSV data should be applied:
+  * `add` adds the imported contacts to the current address book
+  * `overwrite` replaces the current address book with the imported contacts
+* `FILENAME` specifies the name of the CSV file to import.
+  Enter the file name without `.csv`, as NAB automatically looks for the file with the `.csv` extension.
+  For example, `f/save_file` tells NAB to import from `save_file.csv`.
+* The CSV file must be placed in the same directory as the current NAB data file.
+* Contacts in the CSV file that already exist in NAB are skipped to avoid duplicates.
+* Rows with invalid or missing required fields are skipped.
 * Order of parameters does not matter.
 
 Examples:
-* Import from the CSV file and overwrite existing data in NAB : `import t/overwrite f/save_file`
-* Import from the CSV file and append to the existing data in NAB : `import t/add f/save_file`
+* `import t/overwrite f/save_file` imports contacts from `save_file.csv` and replaces the current address book
+* `import t/add f/save_file` imports contacts from `save_file.csv` and adds them to the current address book
 
 ### Saving the data
 
