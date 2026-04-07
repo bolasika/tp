@@ -207,6 +207,13 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void showPerson(Person person) {
+        requireNonNull(person);
+        updateFilteredPersonList(p -> p.equals(person));
+        sortedPersons.setComparator(null);
+    }
+
+    @Override
     public void pinPerson(Person person) {
         requireNonNull(person);
         addressBook.pinPerson(person);
@@ -245,10 +252,14 @@ public class ModelManager implements Model {
         return filteredEvents;
     }
 
-    @Override
-    public void updateFilteredEventList(Predicate<Event> predicate) {
+    private void updateFilteredEventList(Predicate<Event> predicate) {
         requireNonNull(predicate);
         filteredEvents.setPredicate(predicate);
+    }
+
+    @Override
+    public void showNoEvents() {
+        updateFilteredEventList(e -> false);
     }
 
     @Override
@@ -355,4 +366,3 @@ public class ModelManager implements Model {
     }
 
 }
-

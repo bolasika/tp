@@ -7,10 +7,10 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
 
 import seedu.address.commons.util.CommandUtil;
+import seedu.address.commons.util.PhotoStorageUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -56,25 +56,13 @@ public class DeleteCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> listOfPersonToDelete = model.findPersons(this.targetInfo);
-
-        // Scenario : No matching name
-        if (listOfPersonToDelete.isEmpty()) {
-            throw new CommandException(Messages.MESSAGE_NO_MATCH);
-        }
-
-        // Scenario : Multiple contact match name, duplicate handling, returns all matched contacts
-        if (listOfPersonToDelete.size() > 1) {
-            Set<Person> matchingPersons = Set.copyOf(listOfPersonToDelete);
-            model.showMatchingPersons(matchingPersons);
-            throw new CommandException(Messages.MESSAGE_MULTIPLE_MATCH);
-        }
-
-        Person personToDelete = listOfPersonToDelete.get(0);
-
-        // Scenario : Only attempt to delete photo if isPresent and not shared by other contacts
-        if (personToDelete.getPhoto().isPresent()) {
-            CommandUtil.safelyDeletePhoto(model, personToDelete, personToDelete.getPhoto().get());
+        Person personToDelete = CommandUtil.targetPerson(model, this.targetInfo);
+        try {
+            if (personToDelete.getPhoto().isPresent()) {
+                PhotoStorageUtil.deletePhoto(personToDelete.getPhoto().get());
+            }
+        } catch (IOException e) {
+            throw new CommandException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage());
         }
 
         model.deletePerson(personToDelete);
