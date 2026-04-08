@@ -57,7 +57,7 @@ public class EventCommandParserTest {
 
         String userInput = "add title/Complete feature list desc/All tasks start/2026-02-21 1100 "
                 + "end/2026-02-21 1500 "
-                + "to/Amy Bee";
+                + "n/Amy Bee";
 
         assertParseSuccess(parser, userInput, expectedCommand);
     }
