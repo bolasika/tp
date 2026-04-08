@@ -38,7 +38,7 @@ public class DeleteCommandTest {
 
     @Test
     public void execute_validName_success() {
-        Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personToDelete = model.findPersons(createNameOnlyInfo(new Name("Carl Kurz"))).get(0);
         DeleteCommand deleteCommand = new DeleteCommand(createNameOnlyInfo(personToDelete.getName()));
 
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
@@ -47,6 +47,7 @@ public class DeleteCommandTest {
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         Person expectedPersonToDelete = expectedModel.findPersons(createNameOnlyInfo(personToDelete.getName())).get(0);
         expectedModel.deletePerson(expectedPersonToDelete);
+        expectedModel.showNoEvents();
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
     }
@@ -106,6 +107,7 @@ public class DeleteCommandTest {
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         Person expectedPersonToDelete = expectedModel.findPersons(info).get(0);
         expectedModel.deletePerson(expectedPersonToDelete);
+        expectedModel.showNoEvents();
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
     }
@@ -148,6 +150,18 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(expectedPersonToDelete);
         expectedModel.showNoEvents();
         assertCommandSuccess(deleteCommand3, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_validName_clearsFilteredEventList() throws Exception {
+        Person personToDelete = model.findPersons(createNameOnlyInfo(new Name("Alice Pauline"))).get(0);
+        model.showEventsForPerson(personToDelete);
+        assertFalse(model.getFilteredEventList().isEmpty());
+
+        DeleteCommand deleteCommand = new DeleteCommand(createNameOnlyInfo(personToDelete.getName()));
+        deleteCommand.execute(model);
+
+        assertTrue(model.getFilteredEventList().isEmpty());
     }
 
     @Test
