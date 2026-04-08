@@ -108,8 +108,9 @@ How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, it is passed to an `AddressBookParser` object which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
-   Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the command object and the `Model`) to achieve.
+1. The command can communicate with the `Model` when it is executed (e.g., to delete a person).<br>
+   Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the comm
+2. and object and the `Model`) to achieve.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
@@ -129,7 +130,7 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
+* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g., the UI can be bound to this list so that the UI automatically updates when the data in the list change.
 * stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -254,7 +255,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Pros: Will use less memory (e.g., for `delete`, just save the person being deleted).
   * Cons: We must ensure that the implementation of each individual command are correct.
 
 _{more aspects and alternatives to be added}_
@@ -326,6 +327,50 @@ The following activity diagram summarizes the command's match-resolution flow:
     harder to reason about.
   * Cons: Unable to restore order if the pinned contact was unpinned.
 
+### Contact Disambiguating feature
+
+The contact disambiguation feature allows NAB to accurately resolve a target contact when multiple contacts share the same name. This feature is utilized by commands that require precise targeting (e.g., delete, edit) and spans the Logic and Model components.
+
+#### Implementation
+
+The core of this feature relies on the `PersonInformation` class. It encapsulates mandatory fields like `Name` and any optional fields (e.g., phone, email, address, or tags) that can be compared against existing contacts.
+
+The disambiguation logic is driven by `CommandUtil` and `ModelManager`: <br>
+* `CommandUtil#targetPerson(Model, PersonInformation)` acts as the orchestrator for the resolution process. This delegates the search and evaluation of `Person` to the methods below.<br><br>
+* `ModelManager#findPersons(PersonInformation)` performs the filtering of the address book. It first applies a broad case-insensitive match on the name, followed by an "enriched search" that narrows down the contact candidates by strictly matching any optional fields present in the `PersonInformation` object.<br><br>
+* `CommandUtil#targetPersonFromMatches(Model, List<Person>)` evaluates the resulting filtered list. It enforces that exactly one target person is isolated. <br>
+  * If the search results in zero matches, it throws a `CommandException`. <br>
+  * If it results in multiple ambiguous matches, it updates the UI to display only the conflicting contacts and throws a `CommandException` to prompt the user for better criteria.
+
+#### Usage scenario
+
+The following sequence diagram illustrates the functional path taken when a user executes a command that triggers the disambiguation process.
+
+<puml src="diagrams/DisambiguationSequenceDiagram.puml"/>
+
+<box type="info" seamless>
+
+**Note:** Due to a PlantUML rendering limitation, the `:XYZCommand` lifeline is shown to prematurely end at the 1st alt path. The unified destroy marker (X) at the bottom represents the termination of the command's lifecycle for all three alternative paths.
+
+</box>                  
+
+The following activity diagram summarizes the command's match-resolution flow:
+
+<puml src="diagrams/DisambiguationActivityDiagram.puml"/>
+
+#### Design considerations
+
+**Aspect: How search criteria are passed across architectural boundaries**
+
+* **Alternative 1 (current choice):** Encapsulate all search criteria (Name, Phone, Email, Address, Tag) within a dedicated `PersonInformation` object.
+    * Pros: Highly extensible. If a new optional field is added and is considered as a search criterion, the method signatures across `Logic` and `Model` remain unchanged. Only the `PersonInformation` wrapper is updated.
+    * Pros: Resolves "Long Parameter List" code smell. Makes method signatures succinct.
+    * Cons: Additional overhead from creating and maintaining an additional class.
+<br><br>
+* **Alternative 2:** Pass individual fields directly as arguments to the utility and model methods.
+    * Pros: Does not require creating and maintaining a new class.
+    * Cons: Creates method signatures with "Long Parameter List" code smell.
+    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria, removing search criteria) will require modification to all the method signatures. 
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -365,11 +410,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *`  | student             | view a peer's contact details                                                                     | quickly access their information when I need to communicate or plan something with them     |
 | `* * *`  | student             | delete a peer's contact                                                                           | remove old information                                                                      |
 | `* * *`  | student             | search for a specific contact by their name                                                       | quickly find their details without scrolling through the whole list                         |
-| `* * *`  | organized student   | categorise my peers according to context (e.g. modules, tutorial class, CCA, orientation group)  | search for contacts in a specific grouping                                                  |
-| `* * *`  | organized student   | create an event for a commitment I have (e.g. module/project/CCA) linked to relevant contacts    | keep track of events and remind/contact involved individuals                                |
+| `* * *`  | organized student   | categorise my peers according to context (e.g., modules, tutorial class, CCA, orientation group)  | search for contacts in a specific grouping                                                  |
+| `* * *`  | organized student   | create an event for a commitment I have (e.g., module/project/CCA) linked to relevant contacts    | keep track of events and remind/contact involved individuals                                |
 | `* * *`  | organized student   | delete an existing event for a commitment I have                                                  | remove any old or cancelled events so I don't mix up confirmed arrangements                 |
 | `* * *`  | organized student   | view all events related to a specific contact                                                     | easily view my arranged commitments with the specified contact                              |
-| `* * *`  | efficient student   | filter my peers by context                                                                        | quickly find someone from a certain grouping (e.g. tutorial class)                         |
+| `* * *`  | efficient student   | filter my peers by context                                                                        | quickly find someone from a certain grouping (e.g., tutorial class)                         |
 | `* *`    | student             | update a peer's contact                                                                           | always keep my contact information up to date                                               |
 | `* *`    | student             | avoid contact duplication when adding                                                             | ensure I don't get confused from duplicate contacts                                         |
 | `* *`    | organized student   | update an existing event for a commitment I have                                                  | always keep events updated in the case the details are changed                              |
