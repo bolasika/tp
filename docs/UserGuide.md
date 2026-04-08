@@ -384,11 +384,11 @@ Format: `pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
 <panel header=":fa-solid-code: **Examples**" type="info">
 
-- `delete n/John Doe`<br>
-Deletes John Doe when the name uniquely identifies the contact.
+- `pin n/John Doe`<br>
+Pins John Doe when the name uniquely identifies the contact.
 
-- `delete n/John Doe p/91234567`<br>
-Deletes the matching John Doe contact by name and phone number.
+- `pin n/John Doe p/91234567`<br>
+Pins the matching John Doe contact by name and phone number.
 
 </panel>
 
