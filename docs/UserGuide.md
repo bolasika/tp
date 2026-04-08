@@ -404,11 +404,11 @@ Format: `pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
 <panel header=":fa-solid-code: **Examples**" type="info">
 
-- `pin n/John Doe`<br>
-Pins John Doe when the name uniquely identifies the contact.
+- `delete n/John Doe`<br>
+Deletes John Doe when the name uniquely identifies the contact.
 
-- `pin n/John Doe p/91234567`<br>
-Pins the matching John Doe contact by name and phone number.
+- `delete n/John Doe p/91234567`<br>
+Deletes the matching John Doe contact by name and phone number.
 
 </panel>
 
@@ -477,6 +477,21 @@ following information just after `delete n/NAME`: Phone number, Email, Address o
 Examples:
 * `delete n/Alex Yeoh` deletes the contact with a matching name.
 * Suppose there are multiple `Alex Yeoh`, an enriched search would be `delete n/Alex Yeoh t/cs2103 t/cs2105`
+
+<panel header=":fa-solid-code: **Examples**" type="info">
+
+- `pin n/John Doe`<br>
+Pins John Doe when the name uniquely identifies the contact.
+
+- `pin n/John Doe p/91234567`<br>
+Pins the matching John Doe contact by name and phone number.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Disambiguating contacts with the same name**" type="danger"> 
+
+- Refer to the [user disambiguation](#user-disambiguation) section if you encounter the error: `Multiple matches identified!`
+</panel>
 
 ### Clearing all entries: `clear`
 
