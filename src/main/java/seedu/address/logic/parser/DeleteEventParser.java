@@ -51,13 +51,9 @@ public class DeleteEventParser implements Parser<DeleteEventCommand> {
             throw new ParseException(TimeRange.MESSAGE_INVALID_DATE_VALUE);
         }
 
-        try {
-            LocalDateTime startTime = LocalDateTime.parse(startTimeStr, TimeRange.DATE_TIME_FORMATTER);
-            PersonInformation targetInfo = new PersonInformationParser().parse(argMultimap);
-            return new DeleteEventCommand(targetInfo, startTime);
-        } catch (ParseException pe) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE), pe);
-        }
+
+        LocalDateTime startTime = LocalDateTime.parse(startTimeStr, TimeRange.DATE_TIME_FORMATTER);
+        PersonInformation targetInfo = new PersonInformationParser().parse(argMultimap);
+        return new DeleteEventCommand(targetInfo, startTime);
     }
 }

@@ -107,19 +107,19 @@ public class DeleteEventParserTest {
     @Test
     public void parse_invalidPhone_failure() {
         assertParseFailure(parser, " n/" + VALID_NAME + " p/notaphone start/" + VALID_START,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
+                Phone.MESSAGE_CONSTRAINTS);
     }
 
     @Test
     public void parse_invalidEmail_failure() {
         assertParseFailure(parser, " n/" + VALID_NAME + " e/not-an-email start/" + VALID_START,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
+                Email.MESSAGE_CONSTRAINTS);
     }
 
     @Test
     public void parse_invalidName_failure() {
         assertParseFailure(parser, " n/R@chel start/" + VALID_START,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteEventCommand.MESSAGE_USAGE));
+                Name.MESSAGE_CONSTRAINTS);
     }
 
     @Test

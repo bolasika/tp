@@ -50,13 +50,8 @@ public class AddEventParser implements Parser<AddEventCommand> {
                 PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS);
 
         Event event = createEvent(argMultimap);
-        try {
-            PersonInformation targetInfo = new PersonInformationParser().parse(argMultimap);
-            return new AddEventCommand(targetInfo, event);
-        } catch (ParseException pe) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE), pe);
-        }
+        PersonInformation targetInfo = new PersonInformationParser().parse(argMultimap);
+        return new AddEventCommand(targetInfo, event);
     }
 
     private static Event createEvent(ArgumentMultimap argMultimap) throws ParseException {
