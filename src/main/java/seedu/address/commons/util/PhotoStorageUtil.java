@@ -60,7 +60,7 @@ public class PhotoStorageUtil {
     }
 
     /**
-     * Returns true if srcPath is not within managedDirectoryPath
+     * Returns true if srcPath is within managedDirectoryPath
      * @param srcPath is the path of the user image to be copied.
      * @param managedDirectoryPath is the path of where the user image will be copied to, defaulted to data/images/.
      */
@@ -133,7 +133,7 @@ public class PhotoStorageUtil {
      * @param targetDirectory is the directory to delete the photo from.
      */
     public static void deletePhoto(Photo photo, String targetDirectory) throws IOException {
-        // Do not delete photos outside of targetDirectory
+        // Do not delete photos outside targetDirectory
         if (!isSavedLocally(photo, targetDirectory)) {
             return;
         }
