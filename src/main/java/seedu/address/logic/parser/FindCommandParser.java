@@ -35,7 +35,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             PersonInformation info = new PersonInformationParser().parse(argMultimap);
             return new FindCommand(info);
         } catch (ParseException pe) {
-            if (ParserUtil.MESSAGE_DUPLICATE_TAGS.equals(pe.getMessage())) {
+            if (pe.getMessage().startsWith(ParserUtil.MESSAGE_DUPLICATE_TAGS)) {
                 throw pe;
             }
             throw new ParseException(

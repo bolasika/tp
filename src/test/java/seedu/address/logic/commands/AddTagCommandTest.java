@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
@@ -52,7 +51,7 @@ public class AddTagCommandTest {
     }
 
     @Test
-    public void execute_duplicateResolvedPersons_deduplicates() {
+    public void execute_duplicateResolvedPersons_failure() {
         Model model = new ModelManager(new AddressBook(), new UserPrefs());
         Person alice = new PersonBuilder().withName("Alice").withPhone("90003333").build();
         model.addPerson(alice);
@@ -62,20 +61,16 @@ public class AddTagCommandTest {
                 Set.of(new Tag("CS2103"))
         );
 
-        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        Person expectedAlice = new PersonBuilder(alice).withTags("CS2103").build();
-        expectedModel.setPerson(alice, expectedAlice);
-        expectedModel.showAllPersons();
-
-        assertCommandSuccess(command, model,
-                "Tagged 1 person(s) with [CS2103]: Alice", expectedModel);
+        assertCommandFailure(command, model,
+                String.format(AddTagCommand.MESSAGE_DUPLICATE_TARGET_PERSON, "Alice"));
     }
 
     @Test
     public void execute_noMatch_failure() {
         Model model = new ModelManager(new AddressBook(), new UserPrefs());
         AddTagCommand command = new AddTagCommand(List.of(info("Ghost")), Set.of(new Tag("CS2103")));
-        assertCommandFailure(command, model, Messages.MESSAGE_NO_MATCH);
+        assertCommandFailure(command, model,
+                "No matching contact found for target: name=Ghost.");
     }
 
     @Test
@@ -89,7 +84,8 @@ public class AddTagCommandTest {
         AddTagCommand command = new AddTagCommand(List.of(info("Joe")), Set.of(new Tag("CS2103")));
         CommandException thrown = assertThrows(CommandException.class, () -> command.execute(model));
 
-        assertTrue(Messages.MESSAGE_MULTIPLE_MATCH.equals(thrown.getMessage()));
+        assertTrue(AddTagCommand.MESSAGE_MULTIPLE_MATCHES_FOR_TARGET.formatted("name=Joe")
+                .equals(thrown.getMessage()));
         assertTrue(model.getFilteredPersonList().size() == 2);
     }
 
