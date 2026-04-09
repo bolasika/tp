@@ -520,11 +520,29 @@ Format: `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE 
 
 <panel header=":fa-solid-code: **Examples**" type="info">
 
-- `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 n/David Li`<br>
+- `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 to/David Li`<br>
   Adds an event titled "CS2109S Meeting" to David Li.
 
-- `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 n/David Li p/99272758`<br>
+- `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 to/David Li p/99272758`<br>
   Adds an event to the David Li with phone number `99272758`, disambiguating between multiple contacts with the same name.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Duplicate events**" type="danger">
+
+- A user cannot contain duplicate events.
+- A duplicate event (for the same contact) is an event with the same `title/`, `start/`, and `end/` values as an existing linked event.
+- `desc/` is not part of duplicate checking. Changing only the description still counts as the same event.
+- Example: if David Li already has `title/CS2109S Meeting start/2026-03-25 0900 end/2026-03-25 1000`, adding the same title and time range again will be rejected as a duplicate.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Conflicting time ranges**" type="danger">
+
+- NAB rejects an event if its time range overlaps with any existing event in the calendar.
+- Overlap means the 2 ranges share any actual time in common.
+- Back-to-back events are allowed (for example, one ends at `1000` and another starts at `1000`).
+- If a clash is found, NAB shows: `This event clashes with an existing event in the calendar.`
 
 </panel>
 
