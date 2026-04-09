@@ -232,7 +232,7 @@ public class ImportCommand extends Command {
 
         for (int i = 1; i < lines.size(); i++) {
             Optional<ParsedPerson> person = parseLineToPerson(lines.get(i), eventMap);
-            if (person.isPresent() && tryAddParsedPerson(model, person.get())) {
+            if (person.isPresent() && isParsedPersonAdded(model, person.get())) {
                 added++;
             }
         }
@@ -240,7 +240,7 @@ public class ImportCommand extends Command {
         return added;
     }
 
-    private boolean tryAddParsedPerson(Model model, ParsedPerson parsedPerson) {
+    private boolean isParsedPersonAdded(Model model, ParsedPerson parsedPerson) {
         Person person = parsedPerson.person;
         if (model.hasPerson(person)) {
             return false;
@@ -513,7 +513,7 @@ public class ImportCommand extends Command {
         private final Person person;
         private final boolean isPinned;
 
-        ParsedPerson(Person person, boolean isPinned) {
+        private ParsedPerson(Person person, boolean isPinned) {
             this.person = person;
             this.isPinned = isPinned;
         }
