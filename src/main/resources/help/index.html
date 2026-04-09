@@ -48,10 +48,6 @@
                             > help 123
                         </div>
                     </li>
-
-                    <li>If you are using a PDF version of this document, be careful when copying and pasting commands
-                        that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
-                    </li>
                 </ul>
             </div>
         </div>
@@ -405,17 +401,23 @@
                 <div class="important-wrapper">
                     <div class="important-content">
                         <ul>
-                            <li>Refer to the <a href="#user-disambiguation">user disambiguation</a> section if you encounter the error: <code>Multiple matches identified!</code></li>
+                            <li>
+                                If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                                add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                            </li>
+                            <li>
+                                See <a href="#user-disambiguation">user disambiguation</a> for details.
+                            </li>
                         </ul>
                     </div>
                 </div>
             </details>
             <div class="command-box">
-                <span class="code-comment"># Edits John Doe's phone and email<br></span>
+                <span class="code-comment"># Edits John Doe's phone and email.<br></span>
                 > edit n/John Doe -- p/91234567 e/johndoe@example.com<br><br>
                 <span class="code-comment"># Uniquely identifies John Doe by phone, then updates name and tags.<br></span>
                 > edit n/John Doe p/98765432 -- n/Johnathan Doe t/teammate<br><br>
-                <span class="code-comment"># Clears all tags for Betsy Crower<br></span>
+                <span class="code-comment"># Clears all tags for Betsy Crower.<br></span>
                 > edit n/Betsy Crower -- t/<br><br>
                 <span class="code-comment"># Updates Alex Yeoh's profile picture.<br></span>
                 > edit n/Alex Yeoh -- pfp/C:/Users/Alex/Pictures/profile.jpg<br><br>
@@ -440,7 +442,13 @@
                 <div class="important-wrapper">
                     <div class="important-content">
                         <ul>
-                            <li>Refer to the <a href="#user-disambiguation">user disambiguation</a> section if you encounter the error: <code>Multiple matches identified!</code></li>
+                            <li>
+                                If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                                add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                            </li>
+                            <li>
+                                See <a href="#user-disambiguation">user disambiguation</a> for details.
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -474,7 +482,13 @@
                 <div class="important-wrapper">
                     <div class="important-content">
                         <ul>
-                            <li>Refer to the <a href="#user-disambiguation">user disambiguation</a> section if you encounter the error: <code>Multiple matches identified!</code></li>
+                            <li>
+                                If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                                add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                            </li>
+                            <li>
+                                See <a href="#user-disambiguation">user disambiguation</a> for details.
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -508,7 +522,13 @@
                 <div class="important-wrapper">
                     <div class="important-content">
                         <ul>
-                            <li>Refer to the <a href="#user-disambiguation">user disambiguation</a> section if you encounter the error: <code>Multiple matches identified!</code></li>
+                            <li>
+                                If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                                add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                            </li>
+                            <li>
+                                See <a href="#user-disambiguation">user disambiguation</a> for details.
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -525,11 +545,31 @@
             <h2 class="feature-header" id="unpinning-person">Unpinning a person: <code>unpin</code></h2>
             <p>Unpins the person identified by their name.</p>
             <p>Format: <code>unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code></p>
-            <ul>
-                <li>The <code>NAME</code> is case-insensitive. e.g. <code>aLeX YeOH</code> will match <code>Alex Yeoh</code></li>
-                <li>Only full words will be matched e.g. <code>Alex Yeo</code> will not match <code>Alex Yeoh</code></li>
-                <li>Order of parameters does not matter.</li>
-            </ul>
+            <details class="important-callout">
+                <summary class="important-header">
+                    <div class="header-left">
+                        <span class="important-icon">⚠</span>
+                        <strong>Important: Disambiguating contacts with the same name</strong>
+                    </div>
+                    <div class="header-controls">
+                        <span class="control-btn toggle-arrow"></span>
+                    </div>
+                </summary>
+
+                <div class="important-wrapper">
+                    <div class="important-content">
+                        <ul>
+                            <li>
+                                If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                                add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                            </li>
+                            <li>
+                                See <a href="#user-disambiguation">user disambiguation</a> for details.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
             <div class="command-box">
                 <span class="code-comment"># Unpins John Doe when the name uniquely identifies the contact.<br></span>
                 > unpin n/John Doe<br><br>
@@ -742,7 +782,11 @@
             <div class="important-wrapper">
                 <div class="important-content">
                     <ul>
-                        <li>Add optional parameters immediately after <code>n/NAME</code> to narrow down the match — Phone number, Email, Address, or Tag.
+                        <li>
+                            If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                            add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                        </li>
+                        <li>
                             See <a href="#user-disambiguation">user disambiguation</a> for details.
                         </li>
                     </ul>
@@ -751,7 +795,7 @@
         </details>
 
         <div class="command-box">
-            <span class="code-comment"># Adds an event titled "CS2109S Meeting" to David Li<br></span>
+            <span class="code-comment"># Adds an event titled "CS2109S Meeting" to David Li.<br></span>
             > event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900
             end/2026-03-25 1000 n/David Li<br><br>
             <span class="code-comment"># Adds an event to the David Li with phone number 99272758, disambiguating between multiple contacts with the same name.<br></span>
@@ -778,7 +822,11 @@
             <div class="important-wrapper">
                 <div class="important-content">
                     <ul>
-                        <li>Add optional parameters immediately after <code>n/NAME</code> to narrow down the match — Phone number, Email, Address, or Tag.
+                        <li>
+                            If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                            add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                        </li>
+                        <li>
                             See <a href="#user-disambiguation">user disambiguation</a> for details.
                         </li>
                     </ul>
@@ -786,9 +834,9 @@
             </div>
         </details>
         <div class="command-box">
-            <span class="code-comment"># Views all events that Bernice Yu has<br></span>
+            <span class="code-comment"># Views all events that Bernice Yu has.<br></span>
             > event view n/Bernice Yu<br><br>
-            <span class="code-comment"># Views events for the Bernice Yu with the given email, disambiguating between multiple contacts with the same name<br></span>
+            <span class="code-comment"># Views events for the Bernice Yu with the given email, disambiguating between multiple contacts with the same name.<br></span>
             > event view n/Bernice Yu e/berniceyu@example.com
         </div>
     </div>
@@ -811,7 +859,11 @@
             <div class="important-wrapper">
                 <div class="important-content">
                     <ul>
-                        <li>Add optional parameters immediately after <code>n/NAME</code> to narrow down the match — Phone number, Email, Address, or Tag.
+                        <li>
+                            If you encounter the error <code>Multiple matches identified! Please provide more arguments.</code>,
+                            add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+                        </li>
+                        <li>
                             See <a href="#user-disambiguation">user disambiguation</a> for details.
                         </li>
                     </ul>
@@ -819,9 +871,9 @@
             </div>
         </details>
         <div class="command-box">
-            <span class="code-comment"># Deletes the event only if David Li has an assigned event that starts at 2026-03-12 1100<br></span>
+            <span class="code-comment"># Deletes the event only if David Li has an assigned event that starts at 2026-03-12 1100.<br></span>
             > event delete start/2026-03-12 1100 n/David Li<br><br>
-            <span class="code-comment"># Deletes the event only if the David Li with phone number 99272758 has an assigned event that starts at 2026-03-12 1100, disambiguating between multiple contacts with the same name<br></span>
+            <span class="code-comment"># Deletes the event only if the David Li with phone number 99272758 has an assigned event that starts at 2026-03-12 1100, disambiguating between multiple contacts with the same name.<br></span>
             > event delete start/2026-03-12 1100 n/David Li p/99272758
         </div>
     </div>
@@ -878,9 +930,9 @@
             </div>
         </details>
         <div class="command-box">
-            <span class="code-comment"># Exports all contact information in NAB to save_file_persons.csv and save_file_events.csv<br></span>
+            <span class="code-comment"># Exports all contact information in NAB to save_file_persons.csv and save_file_events.csv.<br></span>
             > export t/all f/save_file<br><br>
-            <span class="code-comment"># Exports only the currently displayed contact information to save_file_persons.csv and save_file_events.csv<br></span>
+            <span class="code-comment"># Exports only the currently displayed contact information to save_file_persons.csv and save_file_events.csv.<br></span>
             > export t/current f/save_file
         </div>
     </div>
@@ -925,9 +977,9 @@
             </div>
         </details>
         <div class="command-box">
-            <span class="code-comment"># Imports contacts from save_file_persons.csv and event definitions from save_file_events.csv, replacing the existing data on the address book<br></span>
+            <span class="code-comment"># Imports contacts from save_file_persons.csv and event definitions from save_file_events.csv, replacing the existing data on the address book.<br></span>
             > import t/overwrite f/save_file<br><br>
-            <span class="code-comment"># Imports contacts from save_file_persons.csv and event definitions from save_file_events.csv, adding them to the current address book<br></span>
+            <span class="code-comment"># Imports contacts from save_file_persons.csv and event definitions from save_file_events.csv, adding them to the current address book.<br></span>
             > import t/add f/save_file<br><br>
         </div>
     </div>
