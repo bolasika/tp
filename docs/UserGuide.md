@@ -528,20 +528,14 @@ Format: `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE 
 
 </panel>
 
-<panel header=":fa-solid-exclamation-triangle: **Important: Duplicate events**" type="danger">
+<panel header=":fa-solid-exclamation-triangle: **Important: Event uniqueness and time clashes**" type="danger">
 
-- A user cannot contain duplicate events.
-- A duplicate event (for the same contact) is an event with the same `title/`, `start/`, and `end/` values as an existing linked event.
+- NAB treats the event list as **your schedule** (user point of view).
+- A duplicate event (for the same contact) has the same `title/`, `start/`, and `end/` as an event already linked to that contact.
 - `desc/` is not part of duplicate checking. Changing only the description still counts as the same event.
-- Example: if David Li already has `title/CS2109S Meeting start/2026-03-25 0900 end/2026-03-25 1000`, adding the same title and time range again will be rejected as a duplicate.
-
-</panel>
-
-<panel header=":fa-solid-exclamation-triangle: **Important: Conflicting time ranges**" type="danger">
-
-- NAB rejects an event if its time range overlaps with any existing event in the calendar.
-- Overlap means the 2 ranges share any actual time in common.
-- Back-to-back events are allowed (for example, one ends at `1000` and another starts at `1000`).
+- Time clashes are checked **globally** across the event list, not per contact.
+  - Reason: from your point of view, one user cannot be in two places at the same time, so overlapping events are blocked.
+- Overlap means the 2 ranges share actual time in common. Back-to-back events are allowed (for example, one ends at `1000` and another starts at `1000`).
 - If a clash is found, NAB shows: `This event clashes with an existing event in the calendar.`
 
 </panel>
