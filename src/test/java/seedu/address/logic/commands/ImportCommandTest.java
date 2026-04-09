@@ -385,13 +385,21 @@ public class ImportCommandTest {
 
     @Test
     public void execute_rowWithExistingGlobalEvent_skipsDuplicateGlobalEventAdd() throws Exception {
+        Model addModel = new ModelManager();
         Event existingEvent = new Event(
                 new Title("Meeting"),
                 Optional.of(new Description("Kickoff")),
                 new TimeRange("2026-05-06 1000", "2026-05-06 1100")
         );
-        model.addEvent(existingEvent);
-        int eventCountBeforeImport = model.getAddressBook().getEventList().size();
+        Person existingPerson = new PersonBuilder()
+                .withName("Existing Event Owner")
+                .withPhone("80000001")
+                .withoutPhoto()
+                .build();
+        existingPerson.addEvent(existingEvent);
+        addModel.addEvent(existingEvent);
+        addModel.addPerson(existingPerson);
+        int eventCountBeforeImport = addModel.getAddressBook().getEventList().size();
 
         int eventId = existingEvent.getEventId();
         String testEventStr = "\n" + eventId + ",Meeting,Kickoff,2026-05-06 1000,2026-05-06 1100";
@@ -400,10 +408,17 @@ public class ImportCommandTest {
         createPersonsCsvFile("eventExists", personsHeader + testPersonStr);
 
         ImportCommand command = createTestCommand("add", "eventExists");
-        CommandResult result = command.execute(model);
+        CommandResult result = command.execute(addModel);
 
         assertTrue(result.getFeedbackToUser().contains("1 row(s) added"));
-        assertEquals(eventCountBeforeImport, model.getAddressBook().getEventList().size());
+        assertEquals(eventCountBeforeImport, addModel.getAddressBook().getEventList().size());
+        assertEquals(2, addModel.getAddressBook().getEventList().get(0).getNumberOfPersonLinked());
+
+        Person importedPerson = addModel.getAddressBook().getPersonList().stream()
+                .filter(person -> person.getPhone().value.equals("81234567"))
+                .findFirst()
+                .orElseThrow();
+        assertSame(addModel.getAddressBook().getEventList().get(0), importedPerson.getEvents().get(0));
     }
 
     @Test
@@ -427,7 +442,7 @@ public class ImportCommandTest {
     }
 
     @Test
-    public void execute_duplicateComputedEventId_throwsCommandException() throws Exception {
+    public void execute_duplicateComputedEventId_allowsImportWhenCsvEventIdsDiffer() throws Exception {
         int personCountBeforeImport = model.getAddressBook().getPersonList().size();
         int eventCountBeforeImport = model.getAddressBook().getEventList().size();
 
@@ -438,9 +453,28 @@ public class ImportCommandTest {
                 + "Eve,81234567,eve@u.nus.edu,Blk 321,,,,false");
 
         ImportCommand command = createTestCommand("add", "duplicateComputedEventId");
+        CommandResult result = command.execute(model);
+
+        assertTrue(result.getFeedbackToUser().contains("1 row(s) added"));
+        assertEquals(personCountBeforeImport + 1, model.getAddressBook().getPersonList().size());
+        assertEquals(eventCountBeforeImport, model.getAddressBook().getEventList().size());
+    }
+
+    @Test
+    public void execute_duplicateCsvEventId_throwsCommandException() throws Exception {
+        int personCountBeforeImport = model.getAddressBook().getPersonList().size();
+        int eventCountBeforeImport = model.getAddressBook().getEventList().size();
+
+        createEventsCsvFile("duplicateCsvEventId", eventsHeader + "\n"
+                + "101,Meeting,Kickoff,2026-05-06 1000,2026-05-06 1100\n"
+                + "101,Lunch,,2026-05-06 1200,2026-05-06 1300");
+        createPersonsCsvFile("duplicateCsvEventId", personsHeader + "\n"
+                + "Eve,81234567,eve@u.nus.edu,Blk 321,,,,false");
+
+        ImportCommand command = createTestCommand("add", "duplicateCsvEventId");
         CommandException exception = assertThrows(CommandException.class, () -> command.execute(model));
 
-        assertTrue(exception.getMessage().contains("Duplicate event detected in import: EventId"));
+        assertTrue(exception.getMessage().contains("Duplicate event detected in import: EventId 101 already exists"));
         assertEquals(personCountBeforeImport, model.getAddressBook().getPersonList().size());
         assertEquals(eventCountBeforeImport, model.getAddressBook().getEventList().size());
     }
@@ -611,7 +645,7 @@ public class ImportCommandTest {
                 + "222,Lunch,,2026-05-06 1200,2026-05-06 1300";
         String personsData = personsHeader + "\n"
                 + "Dual Event User,81230000,dual@u.nus.edu,Blk 1,,"
-                + computedMeetingEventId + ";" + computedLunchEventId + ",,false";
+                + "111;222,,false";
 
         createEventsCsvFile("distinctComputedIds", eventsData);
         createPersonsCsvFile("distinctComputedIds", personsData);
@@ -637,18 +671,10 @@ public class ImportCommandTest {
 
     @Test
     public void execute_eventsCsvEventIdChanged_identityAndLinkingUnaffected() throws Exception {
-        int computedEventId = new Event(
-                new Title("Meeting"),
-                Optional.of(new Description("Kickoff")),
-                new TimeRange("2026-05-06 1000", "2026-05-06 1100"),
-                0).getEventId();
-
-        String personsData = personsHeader + "\n"
-                + "Tamper Check,81230001,tamper@u.nus.edu,Blk 2,," + computedEventId + ",,false";
-
         createEventsCsvFile("eventIdIgnoredA", eventsHeader + "\n"
                 + "111,Meeting,Kickoff,2026-05-06 1000,2026-05-06 1100");
-        createPersonsCsvFile("eventIdIgnoredA", personsData);
+        createPersonsCsvFile("eventIdIgnoredA", personsHeader + "\n"
+                + "Tamper Check,81230001,tamper@u.nus.edu,Blk 2,,111,,false");
 
         Model firstModel = new ModelManager();
         ImportCommand firstImport = createTestCommand("overwrite", "eventIdIgnoredA");
@@ -656,7 +682,8 @@ public class ImportCommandTest {
 
         createEventsCsvFile("eventIdIgnoredB", eventsHeader + "\n"
                 + "999999,Meeting,Kickoff,2026-05-06 1000,2026-05-06 1100");
-        createPersonsCsvFile("eventIdIgnoredB", personsData);
+        createPersonsCsvFile("eventIdIgnoredB", personsHeader + "\n"
+                + "Tamper Check,81230001,tamper@u.nus.edu,Blk 2,,999999,,false");
 
         Model secondModel = new ModelManager();
         ImportCommand secondImport = createTestCommand("overwrite", "eventIdIgnoredB");
@@ -678,8 +705,7 @@ public class ImportCommandTest {
         assertEquals(1, secondPerson.get().getEvents().size());
         assertSame(firstGlobalEvent, firstPerson.get().getEvents().get(0));
         assertSame(secondGlobalEvent, secondPerson.get().getEvents().get(0));
-        assertEquals(computedEventId, firstGlobalEvent.getEventId());
-        assertEquals(computedEventId, secondGlobalEvent.getEventId());
+        assertEquals(firstGlobalEvent.getEventId(), secondGlobalEvent.getEventId());
     }
 
     @Test
@@ -801,13 +827,12 @@ public class ImportCommandTest {
     }
 
     @Test
-    public void createEventFromCsvRow_nonNumericEventId_isIgnored() {
+    public void createEventFromCsvRow_nonNumericEventId_throwsIllegalArgumentException() {
         ImportCommand importCommand = new ImportCommand("add", "testFile");
 
-        Event event = importCommand.createEventFromCsvRow("abc,Meeting,desc,2026-05-06 1000,2026-05-06 1100");
-        assertEquals("Meeting", event.getTitle().fullTitle);
-        assertEquals("2026-05-06 1000", event.getStartTimeFormatted());
-        assertEquals("2026-05-06 1100", event.getEndTimeFormatted());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                importCommand.createEventFromCsvRow("abc,Meeting,desc,2026-05-06 1000,2026-05-06 1100"));
+        assertEquals("Event ID must be a valid integer", exception.getMessage());
     }
 
     @Test
@@ -831,6 +856,24 @@ public class ImportCommandTest {
         eventMap.put(100, existingEvent);
 
         List<Event> result = importCommand.parseEventIds("100;999;abc", eventMap);
+
+        assertEquals(1, result.size());
+        assertSame(existingEvent, result.get(0));
+    }
+
+    @Test
+    public void parseEventIds_duplicateAndMissingIds_deduplicatesAndSkipsMissing() {
+        ImportCommand importCommand = new ImportCommand("add", "testFile");
+        HashMap<Integer, Event> eventMap = new HashMap<>();
+
+        Event existingEvent = new Event(
+                new Title("Meeting"),
+                Optional.of(new Description("Kickoff")),
+                new TimeRange("2026-05-06 1000", "2026-05-06 1100")
+        );
+        eventMap.put(100, existingEvent);
+
+        List<Event> result = importCommand.parseEventIds("100;100;999", eventMap);
 
         assertEquals(1, result.size());
         assertSame(existingEvent, result.get(0));

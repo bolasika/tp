@@ -116,7 +116,6 @@ public class ImportCommand extends Command {
         Map<Integer, Event> eventMap = new HashMap<>();
         processImportedEventsFromCsv(tempModel, eventsLines, eventMap);
         int addedRows = processImportedPersonsFromCsv(tempModel, personLines, eventMap);
-        updateEventCounters(tempModel, eventMap);
 
         int totalRows = personLines.size() - 1;
         int skippedRows = totalRows - addedRows;
@@ -162,33 +161,29 @@ public class ImportCommand extends Command {
 
     /**
      * Parses all event rows from the events CSV and registers them with the model.
-     * Detects and rejects duplicate eventIds (computed from the same event content).
+     * Detects and rejects duplicate CSV event IDs.
      *
      * @param model The {@code Model} to register events with.
      * @param lines The list of all lines (including header) from the events CSV.
-     * @param eventMap The map to store parsed events by their computed event IDs.
-     * @throws CommandException If a duplicate eventId is detected.
+     * @param eventMap The map to store parsed events by their CSV event IDs.
+     * @throws CommandException If a duplicate CSV event ID is detected.
      */
     private void processImportedEventsFromCsv(Model model, List<String> lines,
             Map<Integer, Event> eventMap) throws CommandException {
         for (int i = 1; i < lines.size(); i++) {
             try {
-                Optional<Event> eventOpt = parseLineToEvent(lines.get(i));
+                Optional<ParsedEvent> eventOpt = parseLineToEvent(lines.get(i));
                 if (eventOpt.isPresent()) {
-                    Event event = eventOpt.get();
-                    int computedEventId = event.getEventId();
-
-                    // Reject duplicate computed IDs (possible tampering / conflicting rows)
-                    if (eventMap.containsKey(computedEventId)) {
+                    ParsedEvent parsedEvent = eventOpt.get();
+                    if (eventMap.containsKey(parsedEvent.csvEventId)) {
                         throw new CommandException(
                                 String.format("Duplicate event detected in import: EventId %d already exists",
-                                        computedEventId));
+                                        parsedEvent.csvEventId));
                     }
 
-                    eventMap.put(computedEventId, event);
-
-                    if (!model.hasEvent(event) && !model.hasOverlappingEvent(event)) {
-                        model.addEvent(event);
+                    Event canonicalEvent = resolveCanonicalEvent(model, parsedEvent.event);
+                    if (canonicalEvent != null) {
+                        eventMap.put(parsedEvent.csvEventId, canonicalEvent);
                     }
                 }
             } catch (IllegalArgumentException e) {
@@ -203,7 +198,7 @@ public class ImportCommand extends Command {
      *
      * @param model The {@code Model} to be updated with new contacts.
      * @param lines The list of all lines (including header) from the persons CSV.
-     * @param eventMap The map of available events indexed by computed event ID.
+     * @param eventMap The map of available events indexed by CSV event ID.
      * @return The count of successfully added rows.
      */
     private int processImportedPersonsFromCsv(Model model, List<String> lines,
@@ -216,6 +211,12 @@ public class ImportCommand extends Command {
                 ParsedPerson parsedPerson = person.get();
                 Person p = parsedPerson.person;
                 if (!model.hasPerson(p)) {
+                    for (Event event : p.getEvents()) {
+                        if (!model.hasEvent(event)) {
+                            model.addEvent(event);
+                        }
+                        event.incrementNumberOfPersonLinked();
+                    }
                     model.addPerson(p);
                     if (parsedPerson.isPinned) {
                         model.pinPerson(p);
@@ -234,7 +235,7 @@ public class ImportCommand extends Command {
      * Attempts to parse a CSV line into a {@code Person} object.
      * Captures parsing errors to allow the import process to continue with other rows.
      * @param line A single data row from the persons CSV file.
-     * @param eventMap Map of computed event IDs to Event objects for linking.
+     * @param eventMap Map of CSV event IDs to Event objects for linking.
      * @return An {@code Optional} containing the {@code Person} if parsing was successful,
      *         otherwise an empty {@code Optional}.
      */
@@ -252,10 +253,10 @@ public class ImportCommand extends Command {
     /**
      * Attempts to parse a CSV line into an {@code Event} object.
      * @param line A single data row from the events CSV file.
-     * @return An {@code Optional} containing the {@code Event} if parsing was successful,
+     * @return An {@code Optional} containing the parsed event if parsing was successful,
      *         otherwise an empty {@code Optional}.
      */
-    Optional<Event> parseLineToEvent(String line) {
+    Optional<ParsedEvent> parseLineToEvent(String line) {
         // Blank event rows are treated as empty entries.
         if (line == null || line.trim().isEmpty()) {
             return Optional.empty();
@@ -266,44 +267,47 @@ public class ImportCommand extends Command {
 
     /**
      * Helps convert a raw CSV row from the events file into an {@code Event} object.
-     * The EventId column in events CSV is ignored; the constructor computes the actual EventId
-     * from event content.
+     * The CSV EventId column is used only as a temporary file-local reference key.
      *
      * @param row A single comma-separated string from the events CSV file.
-     * @return An {@code Event} object populated with the data from the row.
+     * @return A parsed event containing the CSV event ID and reconstructed event object.
      */
-    Event createEventFromCsvRow(String row) {
+    ParsedEvent createEventFromCsvRow(String row) {
         String[] columns = CsvUtil.splitCsvLine(row);
         if (columns.length < 5) {
             throw new IllegalArgumentException("Event row does not have required columns");
         }
 
-        String titleStr = unwrapValue(columns[1]).trim();
-        String descStr = unwrapValue(columns[2]).trim();
-        String startStr = columns[3].trim();
-        String endStr = columns[4].trim();
+        try {
+            int csvEventId = Integer.parseInt(columns[0].trim());
+            String titleStr = unwrapValue(columns[1]).trim();
+            String descStr = unwrapValue(columns[2]).trim();
+            String startStr = columns[3].trim();
+            String endStr = columns[4].trim();
 
-        if (titleStr.isEmpty() || startStr.isEmpty() || endStr.isEmpty()) {
-            throw new IllegalArgumentException("Event has missing required fields");
+            if (titleStr.isEmpty() || startStr.isEmpty() || endStr.isEmpty()) {
+                throw new IllegalArgumentException("Event has missing required fields");
+            }
+
+            Title title = new Title(titleStr);
+            Optional<Description> desc = descStr.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new Description(descStr));
+            TimeRange timeRange = new TimeRange(startStr, endStr);
+
+            return new ParsedEvent(csvEventId, new Event(title, desc, timeRange, 0));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Event ID must be a valid integer");
         }
-
-        Title title = new Title(titleStr);
-        Optional<Description> desc = descStr.isEmpty()
-                ? Optional.empty()
-                : Optional.of(new Description(descStr));
-        TimeRange timeRange = new TimeRange(startStr, endStr);
-
-        // Imported events start unlinked; links are recomputed from imported persons.
-        return new Event(title, desc, timeRange, 0);
     }
 
     /**
      * Helps convert a raw CSV row from the persons file into a {@code Person} object by
      * splitting the line, validating the structure, and populating contact and event data.
-     * Events are linked via event IDs from the provided eventMap, translated from CSV IDs.
+     * Events are linked via CSV event IDs from the provided eventMap.
      *
      * @param row A single comma-separated string from the persons CSV file.
-     * @param eventMap Map of computed event IDs to Event objects for linking.
+     * @param eventMap Map of CSV event IDs to Event objects for linking.
      * @return A {@code Person} object populated with the data from the row.
      */
     private ParsedPerson createPersonFromCsvRow(String row, Map<Integer, Event> eventMap) {
@@ -366,11 +370,11 @@ public class ImportCommand extends Command {
     /**
      * Parses the CSV event ID string (semicolon-separated event IDs) and
      * links the corresponding events to the specified {@code Person}.
-     * Event IDs are interpreted as computed EventIds.
+     * Event IDs are interpreted as CSV event IDs.
      *
      * @param p The {@code Person} object to receive the events.
      * @param eventIdString The raw, semicolon-separated event ID string from the CSV.
-     * @param eventMap Map of computed event IDs to Event objects for linking.
+     * @param eventMap Map of CSV event IDs to Event objects for linking.
      */
     private void populateEventInfo(Person p, String eventIdString, Map<Integer, Event> eventMap) {
         List<Event> events = parseEventIds(eventIdString, eventMap);
@@ -379,24 +383,16 @@ public class ImportCommand extends Command {
 
     /**
      * Parses a semicolon-separated string of event IDs and retrieves the corresponding
-     * Event objects from the eventMap using computed event IDs.
-     *
-     * CRITICAL: The eventIds in the CSV refer to computed event IDs (based on event content hash).
-     * This method:
-     * 1. Parses each event ID from the semicolon-separated string
-     * 2. Looks up the event in the eventMap using the computed event ID as the key
-     * 3. Returns the actual Event object with the correct numberOfPersonLinked value
-     *
-     * This ensures that events imported from CSV are correctly linked to their respective
-     * Event objects in memory, with proper linkage counts maintained.
+     * Event objects from the eventMap using CSV event IDs.
      *
      * @param eventIdString The raw string containing event IDs (e.g., "101;102;103").
-     * @param eventMap Map of computed event IDs to Event objects, populated during event import.
+     * @param eventMap Map of CSV event IDs to Event objects, populated during event import.
      * @return A {@code List} of {@code Event} objects.
      *         Returns an empty list if input is empty or if event IDs are not found.
      */
     List<Event> parseEventIds(String eventIdString, Map<Integer, Event> eventMap) {
         List<Event> events = new ArrayList<>();
+        Set<Event> seenEvents = new HashSet<>();
 
         if (eventIdString == null || eventIdString.trim().isEmpty()) {
             return events;
@@ -407,11 +403,11 @@ public class ImportCommand extends Command {
             try {
                 int eventId = Integer.parseInt(idStr.trim());
                 Event event = eventMap.get(eventId);
-                if (event != null) {
+                if (event != null && seenEvents.add(event)) {
                     events.add(event);
-                } else {
+                } else if (event == null) {
                     logger.info(String.format(
-                            "ImportCommand: Event with computed ID %d not found in events map", eventId));
+                            "ImportCommand: Event with CSV ID %d not found in events map", eventId));
                 }
             } catch (NumberFormatException e) {
                 logger.info(String.format(
@@ -435,6 +431,18 @@ public class ImportCommand extends Command {
         }
     }
 
+    /**
+     * Helper container for a parsed event row and its CSV EventId.
+     */
+    static class ParsedEvent {
+        private final int csvEventId;
+        private final Event event;
+
+        ParsedEvent(int csvEventId, Event event) {
+            this.csvEventId = csvEventId;
+            this.event = event;
+        }
+    }
 
     /**
      * Returns the path to the events CSV file to be imported, resolved relative to the
@@ -503,32 +511,31 @@ public class ImportCommand extends Command {
     }
 
     /**
-     * Updates event counters based on actual person-event links and removes events with 0 linked persons.
-     * Traverses all persons in the model and increments each event's numberOfPersonLinked counter.
-     * Events with 0 linked persons are removed from the model.
-     *
-     * @param model The {@code Model} containing the imported persons and events.
-     * @param eventMap The map of all events by their regenerated event IDs.
+     * Resolves the canonical event instance to use for imported person links.
+     * Returns {@code null} when the imported event should be dropped, such as when it clashes.
      */
-    private void updateEventCounters(Model model, Map<Integer, Event> eventMap) {
-
-        // Traverse all persons and increment event counters for each person-event link.
-        // Since events start with numberOfPersonLinked = 0, this builds up the correct count.
-        for (Person person : model.getAddressBook().getPersonList()) {
-            for (Event event : person.getEvents()) {
-                event.incrementNumberOfPersonLinked();
-            }
+    private Event resolveCanonicalEvent(Model model, Event importedEvent) {
+        Event existingEvent = findExistingEvent(model, importedEvent);
+        if (existingEvent != null) {
+            return existingEvent;
         }
 
-        // Remove only imported events that were actually added to the model and remain unlinked.
-        // These are events that appeared in the events CSV but are not referenced by any person.
-        List<Event> eventsToRemove = eventMap.values().stream()
-                .filter(event -> event.getNumberOfPersonLinked() == 0 && model.hasEvent(event))
-                .toList();
-
-        for (Event event : eventsToRemove) {
-            model.deleteEvent(event);
+        if (model.hasOverlappingEvent(importedEvent)) {
+            logger.info(String.format("ImportCommand: Skipping overlapping event entry: %s", importedEvent));
+            return null;
         }
+
+        return importedEvent;
+    }
+
+    /**
+     * Finds the existing event object in the model that matches {@code targetEvent}.
+     */
+    private Event findExistingEvent(Model model, Event targetEvent) {
+        return model.getAddressBook().getEventList().stream()
+                .filter(targetEvent::isSameEvent)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
