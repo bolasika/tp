@@ -45,6 +45,9 @@ public class AddressTest {
         // same values -> returns true
         assertTrue(address.equals(new Address("Valid Address")));
 
+        // same values with different casing -> returns true
+        assertTrue(address.equals(new Address("vALID aDDRESS")));
+
         // same object -> returns true
         assertTrue(address.equals(address));
 
