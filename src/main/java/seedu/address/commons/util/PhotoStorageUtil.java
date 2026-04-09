@@ -17,28 +17,22 @@ import seedu.address.model.person.Photo;
 */
 
 public class PhotoStorageUtil {
+    public static final String DEFAULT_IMAGE_DIR = "data/images/";
+
     private static final Logger logger = LogsCenter.getLogger(PhotoStorageUtil.class);
-    private static String imageDirectory = "data/images/";
     private static final String MESSAGE_MANAGED_DIRECTORY_SOURCE_NOT_ALLOWED =
             "Direct linking from managed image directory is not allowed."
             + " Please provide a source image outside data/images/.";
-
-    public static String getImageDirectory() {
-        return imageDirectory;
-    }
-
     /**
      * Returns true if the photo is already in the directory.
      */
-    public static boolean isSavedLocally(Photo photo) {
-        return photo.getPath().startsWith(PhotoStorageUtil.getImageDirectory());
+    public static boolean isSavedLocally(Photo photo, String targetDirectory) {
+        return photo.getPath().startsWith(targetDirectory);
     }
 
-    public static void setImageDirectory(String directory) {
-        String formattedDirectoryPath = directory.replace("\\", "/");
-        imageDirectory = formattedDirectoryPath.endsWith("/") ? formattedDirectoryPath : formattedDirectoryPath + "/";
-    }
-
+    /**
+     * Returns a formatted path string that is cross-OS compatible
+     */
     public static String formatPath(Path path) {
         return path.toString().replace("\\", "/");
     }
@@ -48,10 +42,10 @@ public class PhotoStorageUtil {
      * @param photo is the photo object specified by the user, it contains the raw file path.
      * @return a photo object that contains the encoded UUID file path for usage by NAB.
      */
-    public static Photo copyPhotoToDirectory(Photo photo) throws IOException {
+    public static Photo copyPhotoToDirectory(Photo photo, String targetDirectory) throws IOException {
         // Define the srcPath to take from, and destDir to move to
         Path srcPath = Paths.get(photo.getPath());
-        Path destDir = Paths.get(imageDirectory);
+        Path destDir = Paths.get(targetDirectory);
 
         // Checks relating to srcPath and image file
         validateSourcePath(srcPath, destDir);
@@ -62,7 +56,7 @@ public class PhotoStorageUtil {
         logger.info("Copying photo from " + srcPath + " to " + fullDestDir);
         Files.copy(srcPath, fullDestDir, StandardCopyOption.REPLACE_EXISTING);
 
-        return createRelativePhoto(uniqueFileName);
+        return createRelativePhoto(uniqueFileName, targetDirectory);
     }
 
     private static boolean isPathWithinManagedDirectory(Path sourcePath, Path managedDirectoryPath) {
@@ -119,8 +113,8 @@ public class PhotoStorageUtil {
      * Creates a new Photo object with the relative path required for JSON storage.
      * @return photo object that is tied to a person
      */
-    private static Photo createRelativePhoto(String uniqueFileName) {
-        Path relativePath = Paths.get(imageDirectory, uniqueFileName);
+    private static Photo createRelativePhoto(String uniqueFileName, String targetDirectory) {
+        Path relativePath = Paths.get(targetDirectory, uniqueFileName);
         return new Photo(formatPath(relativePath));
     }
 
@@ -128,9 +122,9 @@ public class PhotoStorageUtil {
      * Deletes a specified photo object from data/images.
      * @param photo is the photo object to be deleted.
      */
-    public static void deletePhoto(Photo photo) throws IOException {
+    public static void deletePhoto(Photo photo, String targetDirectory) throws IOException {
         // Do not delete photos outside /data/images
-        if (!isSavedLocally(photo)) {
+        if (!isSavedLocally(photo, targetDirectory)) {
             return;
         }
 
@@ -139,31 +133,35 @@ public class PhotoStorageUtil {
         try {
             Files.deleteIfExists(pathToDelete);
         } catch (IOException e) {
-            throw new IOException("The old image file cannot be deleted: " + pathToDelete);
+            throw new IOException("The old image file cannot be deleted: " + pathToDelete, e);
         }
     }
 
     /**
      * Clears the entire data/images directory.
      */
-    public static void clearDirectory() throws IOException {
-        Path toBeDeleted = Paths.get(imageDirectory);
+    public static void clearDirectory(String targetDirectory) throws IOException {
+        Path toBeDeleted = Paths.get(targetDirectory);
 
         if (!Files.exists(toBeDeleted)) {
             return;
         }
 
+        // 1. Collect all paths first to avoid Java/Windows locking the directory stream
+        java.util.List<Path> pathsToDelete;
         try (java.util.stream.Stream<Path> paths = Files.walk(toBeDeleted)) {
-            paths.sorted(java.util.Comparator.reverseOrder())
-                    .forEach(path -> {
-                        try {
-                            Files.delete(path);
-                        } catch (IOException e) {
-                            throw new java.io.UncheckedIOException(e);
-                        }
-                    });
-        } catch (java.io.UncheckedIOException | IOException e) {
-            throw new IOException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage());
+            pathsToDelete = paths.sorted(java.util.Comparator.reverseOrder())
+                    .filter(p -> !p.equals(toBeDeleted))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        // 2. Safely delete them now that the stream is closed
+        for (Path path : pathsToDelete) {
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                throw new IOException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage(), e);
+            }
         }
     }
 }
