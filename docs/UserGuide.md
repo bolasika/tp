@@ -783,6 +783,7 @@ This `export` feature allows you to write contacts from NAB into 2 CSV files (`<
 - Enter `FILENAME` without specifying the `_persons.csv` or `_events.csv` extension. NAB will automatically append it for you.
 - The exported files are saved in the same directory as the current NAB data file.
   - If a file with the same name already exists, it will be overwritten.
+- Custom profile photos are not exported. During export, the profile photo header is included in the CSV to maintain schema consistency, but the field values are intentionally left blank. When imported, these blank values resolve to the default placeholder image.
 - Order of parameters does not matter.
 
 </box>
