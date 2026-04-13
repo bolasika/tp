@@ -735,21 +735,19 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC6` - Filter Contact by Tag<br>
 **MSS**
-1. User requests to find contacts with specific tag(s).
-2. User enters the necessary tag(s).
-3. NAB checks whether the provided tag(s) is/are valid.
-4. NAB retrieves a list of contacts matching the tag(s).
-5. NAB displays the list of contacts to the user.
+1. User requests to filter contacts by providing one or more tags.
+2. NAB filters contact(s) with the tags provided.
+3. NAB displays the list of contacts matching the tags and clears the event panel.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 3a. NAB detects invalid characters in the provided tag
-    * 3a1. NAB returns an error message.
-    <br> *Use case ends.*<br><br>
-* 4a. NAB finds no available contacts matching the tag(s) provided.
-    * 4a1. NAB informs the user that no matches were found.
-    <br> *Use case ends.*
+* 1a. NAB detects invalid characters or formats in the provided fields.
+    * 1a1. NAB displays an error message specifying the correct command format.
+      <br> *Use case ends.*<br><br>
+* 2a. No contacts in the system contain any of the provided tags.
+    * 2a1. NAB displays an empty list and a message indicating no contacts were found with those tags.
+      <br> *Use case ends.*
 </box>
 
 <box type="info" seamless>
