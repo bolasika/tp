@@ -570,7 +570,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC2` - Find Contact<br>
 **MSS**
-1. User requests to find a contact by providing a name and any optional fields.
+1. User requests to find a contact by providing name keyword(s) and any optional fields.
 2. NAB searches for all contacts matching the criteria.
 3. NAB displays a list of contacts matching the criteria specified.
    <br> *Use case ends.*
@@ -585,7 +585,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 2a2. NAB automatically retrieves and displays the event list associated with that specific contact.
       <br> *Use case ends.*<br><br>
 * 2b. NAB finds no available contacts matching the criteria.
-    * 2b1. NAB displays an empty contact list and informs the user that 0 matches were found.
+    * 2b1. NAB displays an empty contact list and informs the user that no matching contacts were found.
       <br> *Use case ends.*
 </box>
 
@@ -599,7 +599,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 1. User requests to delete a specific contact by providing their name and any optional fields.
 2. NAB identifies the specific contact matching the fields.
 3. NAB deletes the contact.
-4. NAB updates the display to show the remaining contacts and clears the event panel.
+4. NAB updates the display. If the deleted contact's event list was being shown, NAB clears the event panel.
    <br> *Use case ends.*
 
 **Extensions**
@@ -636,10 +636,10 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   * 1a1. NAB displays an error message specifying the correct command format.
     <br> *Use case ends.*<br><br>
 * 2a. NAB finds no contacts matching the provided details.
-  * 2a1. NAB displays an error message indicating the contact does not exist.
+  * 2a1. NAB displays an error message indicating that no matching contact was found.
     <br> *Use case ends.*<br><br>
 * 2b. NAB finds multiple contacts that match the provided details.
-  * 2b1. NAB displays the conflicting contacts and prompts for more specific details.
+  * 2b1. NAB displays the conflicting contacts and prompts the user to provide more arguments.
     <br> *Use case ends.*<br><br>
 * 3a. NAB detects that the contact is already linked to this exact event.
   * 3a1. NAB displays an error message indicating the duplication.
@@ -668,7 +668,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1a1. NAB displays an error message specifying the correct command format.
     <br> *Use case ends.*<br><br>
 * 2a. NAB is unable to find a contact matching the provided criteria.
-    * 2a1. NAB informs the user that contact does not exist.
+    * 2a1. NAB informs the user that no matching contact was found.
     <br> *Use case ends.*<br><br>
 * 2b. NAB finds multiple contacts that match the provided criteria.
   * 2b1. NAB displays the conflicting contacts and returns an error prompting the user to provide more specific arguments.
@@ -686,8 +686,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Use case:** `UC6` - Filter Contact by Tag<br>
 **MSS**
 1. User requests to filter contacts by providing one or more tags.
-2. NAB filters contact(s) with the tags provided.
-3. NAB displays the list of contacts matching the tags and clears the event panel.
+2. NAB filters contact(s) that contain any of the provided tags.
+3. NAB displays the list of contacts matching any of the tags and clears the event panel.
    <br> *Use case ends.*
 
 **Extensions**
@@ -753,6 +753,123 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       <br> *Use case continues from step 4.*
 * 3b. An existing contact is found when importing.
     * 3b1. NAB skips the duplicate row and continues importing the remaining rows.
+      <br> *Use case continues from step 4.*
+</box>
+
+<box type="info" seamless>
+
+**UC9 - Pin Contact**
+
+
+**Use case:** `UC9` - Pin Contact<br>
+**MSS**
+1. User requests to pin a specific contact by providing their name and any optional fields.
+2. NAB identifies the specific contact matching the fields.
+3. NAB pins the contact.
+4. NAB updates the display to show pinned contacts first and clears the event panel.
+   <br> *Use case ends.*
+
+**Extensions**
+
+* 1a. NAB detects invalid characters or formats in the provided fields.
+    * 1a1. NAB displays an error message specifying the correct command format.
+      <br> *Use case ends.*<br><br>
+* 2a. NAB finds multiple contacts that match the provided fields.
+    * 2a1. NAB displays the conflicting contacts and returns an error prompting the user to provide more arguments.
+      <br> *Use case ends.*<br><br>
+* 2b. NAB finds no available contacts that match the fields provided.
+    * 2b1. NAB informs the user that no matching contact was found.
+      <br> *Use case ends.*<br><br>
+* 3a. NAB detects that the contact is already pinned.
+    * 3a1. NAB informs the user that the contact is already pinned.
+      <br> *Use case ends.*
+</box>
+
+<box type="info" seamless>
+
+**UC10 - Unpin Contact**
+
+
+**Use case:** `UC10` - Unpin Contact<br>
+This use case is analogous to `UC9` - Pin Contact.<br>
+
+**Differences**
+1. In step 1, the user requests to unpin a contact instead of pinning one.
+2. In step 3, NAB unpins the contact.
+3. In extension 3a, NAB detects that the contact is already unpinned and informs the user.
+</box>
+
+<box type="info" seamless>
+
+**UC11 - Edit Contact**
+
+
+**Use case:** `UC11` - Edit Contact<br>
+**MSS**
+1. User requests to edit a specific contact by providing the contact's identifying details and at least one field to update.
+2. NAB identifies the specific contact matching the identifying details.
+3. NAB updates the contact with the provided field values.
+4. NAB displays the edited contact and the event list associated with that contact.
+   <br> *Use case ends.*
+
+**Extensions**
+
+* 1a. NAB detects invalid characters, invalid formats, missing required fields, or an invalid edit delimiter.
+    * 1a1. NAB displays an error message specifying the correct command format or field constraint.
+      <br> *Use case ends.*<br><br>
+* 1b. NAB detects that no field to update was provided.
+    * 1b1. NAB informs the user that at least one field to edit must be provided.
+      <br> *Use case ends.*<br><br>
+* 2a. NAB finds no contacts matching the provided identifying details.
+    * 2a1. NAB informs the user that no matching contact was found.
+      <br> *Use case ends.*<br><br>
+* 2b. NAB finds multiple contacts that match the provided identifying details.
+    * 2b1. NAB displays the conflicting contacts and returns an error prompting the user to provide more arguments.
+      <br> *Use case ends.*<br><br>
+* 3a. NAB detects that the updated phone number would duplicate another contact.
+    * 3a1. NAB informs the user that a contact with the same phone number already exists.
+      <br> *Use case ends.*<br><br>
+* 3b. NAB detects that the requested edit would not change the contact.
+    * 3b1. NAB informs the user that no changes were done.
+      <br> *Use case ends.*<br><br>
+* 3c. NAB is unable to read or copy the provided photo file, such as when the file path is invalid or the file does not exist.
+    * 3c1. NAB returns an error message indicating the photo save failure.
+      <br> *Use case ends.*
+</box>
+
+<box type="info" seamless>
+
+**UC12 - Add Tag to Contact(s)**
+
+
+**Use case:** `UC12` - Add Tag to Contact(s)<br>
+**MSS**
+1. User requests to assign one or more tags to one or more contacts by providing the tags and the contacts' identifying details.
+2. NAB identifies all specified contacts.
+3. NAB adds the specified tag(s) to each identified contact.
+4. NAB updates the display to show pinned contacts first and clears the event panel.
+5. NAB informs the user how many contacts were tagged, which tags were assigned, and which contacts were tagged.
+   <br> *Use case ends.*
+
+**Extensions**
+
+* 1a. NAB detects invalid characters, invalid formats, missing tags to assign, missing target contacts, or tag/contact segments in the wrong order.
+    * 1a1. NAB displays an error message specifying the correct command format or field constraint.
+      <br> *Use case ends.*<br><br>
+* 1b. NAB detects duplicate tags in the tags to assign.
+    * 1b1. NAB displays an error message indicating the duplicate tag.
+      <br> *Use case ends.*<br><br>
+* 2a. NAB finds no contact matching one of the provided target contact details.
+    * 2a1. NAB informs the user which target contact has no matching contact.
+      <br> *Use case ends.*<br><br>
+* 2b. NAB finds multiple contacts that match one of the provided target contact details.
+    * 2b1. NAB displays the conflicting contacts and returns an error prompting the user to provide more details for that target contact.
+      <br> *Use case ends.*<br><br>
+* 2c. NAB detects that the same contact was specified more than once.
+    * 2c1. NAB informs the user that the same contact cannot be specified more than once in a single tag command.
+      <br> *Use case ends.*<br><br>
+* 3a. One or more identified contacts already have one or more of the specified tags.
+    * 3a1. NAB leaves those existing tags unchanged and continues assigning the remaining tags.
       <br> *Use case continues from step 4.*
 </box>
 
