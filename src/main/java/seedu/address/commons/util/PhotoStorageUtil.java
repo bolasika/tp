@@ -22,7 +22,7 @@ public class PhotoStorageUtil {
     private static final Logger logger = LogsCenter.getLogger(PhotoStorageUtil.class);
     private static final String MESSAGE_MANAGED_DIRECTORY_SOURCE_NOT_ALLOWED =
             "Direct linking from managed image directory is not allowed."
-            + " Please provide a source image outside data/images/.";
+            + " Please provide a source image outside " + DEFAULT_IMAGE_DIR + " .";
     /**
      * Returns true if the photo is already in the directory.
      */
@@ -154,25 +154,10 @@ public class PhotoStorageUtil {
     public static void clearDirectory(String targetDirectory) throws IOException {
         Path toBeDeleted = Paths.get(targetDirectory);
 
-        if (!Files.exists(toBeDeleted)) {
-            return;
-        }
-
-        // 1. Collect all paths first to avoid Java/Windows locking the directory stream
-        java.util.List<Path> pathsToDelete;
-        try (java.util.stream.Stream<Path> paths = Files.walk(toBeDeleted)) {
-            pathsToDelete = paths.sorted(java.util.Comparator.reverseOrder())
-                    .filter(p -> !p.equals(toBeDeleted))
-                    .collect(java.util.stream.Collectors.toList());
-        }
-
-        // 2. Safely delete them now that the stream is closed
-        for (Path path : pathsToDelete) {
-            try {
-                Files.delete(path);
-            } catch (IOException e) {
-                throw new IOException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage(), e);
-            }
+        try {
+            FileUtil.clearDirectory(toBeDeleted);
+        } catch (IOException e) {
+            throw new IOException(Messages.MESSAGE_DELETE_PHOTO_FAIL + e.getMessage(), e);
         }
     }
 }

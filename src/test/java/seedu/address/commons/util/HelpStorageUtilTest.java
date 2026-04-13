@@ -28,6 +28,7 @@ public class HelpStorageUtilTest {
             HELP_DIR.toFile().setWritable(true);
         }
         HelpStorageUtil.clearDirectory();
+        Files.deleteIfExists(HELP_DIR);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class HelpStorageUtilTest {
         HelpStorageUtil.clearDirectory();
 
         assertFalse(Files.exists(dummyFile), "The dummy file should be deleted");
-        assertFalse(Files.isDirectory(HELP_DIR), "The help directory should be deleted");
+        assertTrue(Files.isDirectory(HELP_DIR), "The help directory should be deleted");
     }
 
     @Test

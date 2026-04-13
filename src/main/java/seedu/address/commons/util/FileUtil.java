@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Writes and reads files
@@ -78,6 +81,32 @@ public class FileUtil {
      */
     public static void writeToFile(Path file, String content) throws IOException {
         Files.write(file, content.getBytes(CHARSET));
+    }
+
+    /**
+     * Safely clears a directory by deleting all its contents.
+     * The root directory itself is preserved.
+     *
+     * @param targetDirectory The Path of the directory to empty.
+     * @throws IOException if an error occurs during deletion.
+     */
+    public static void clearDirectory(Path targetDirectory) throws IOException {
+        if (!Files.exists(targetDirectory)) {
+            return;
+        }
+
+        // 1. Collect all paths first to avoid Java/Windows locking the directory stream
+        List<Path> pathsToDelete;
+        try (Stream<Path> paths = Files.walk(targetDirectory)) {
+            pathsToDelete = paths.sorted(java.util.Comparator.reverseOrder())
+                    .filter(p -> !p.equals(targetDirectory))
+                    .collect(Collectors.toList());
+        }
+
+        // 2. Safely delete them now that the stream is closed
+        for (Path path : pathsToDelete) {
+            Files.delete(path);
+        }
     }
 
 }

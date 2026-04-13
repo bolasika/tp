@@ -61,21 +61,10 @@ public class HelpStorageUtil {
     public static void clearDirectory() throws IOException {
         Path userHelpDir = Paths.get(HELP_DIR_STRING);
 
-        if (!Files.isDirectory(userHelpDir)) {
-            return;
-        }
-
-        try (java.util.stream.Stream<Path> paths = Files.walk(userHelpDir)) {
-            paths.sorted(java.util.Comparator.reverseOrder())
-                    .forEach(path -> {
-                        try {
-                            Files.delete(path);
-                        } catch (IOException e) {
-                            throw new java.io.UncheckedIOException(e);
-                        }
-                    });
+        try {
+            FileUtil.clearDirectory(userHelpDir);
             logger.info("Successfully cleared offline help directory.");
-        } catch (java.io.UncheckedIOException | IOException e) {
+        } catch (IOException e) {
             logger.severe("Clearing temporary directory failed: " + userHelpDir.toAbsolutePath());
             throw new IOException(Messages.MESSAGE_FAILED_OFFLINE_GUIDE + e.getMessage());
         }
