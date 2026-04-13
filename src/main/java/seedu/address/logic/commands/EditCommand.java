@@ -131,8 +131,7 @@ public class EditCommand extends Command {
 
         if (editPersonDescriptor.getPhoto().isEmpty()) {
             if (personToEdit.getPhoto().isPresent()) {
-                CommandUtil.safelyDeletePhoto(model, personToEdit,
-                        personToEdit.getPhoto().get(), this.targetDirectory);
+                CommandUtil.safelyDeletePhoto(model, personToEdit, personToEdit.getPhoto().get(), this.targetDirectory);
             }
             return;
         }

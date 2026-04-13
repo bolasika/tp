@@ -119,15 +119,18 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
         Optional<String> updatedEmailValue = updateMultimap.getValue(PREFIX_EMAIL);
         if (updatedEmailValue.isPresent()) {
-            editPersonDescriptor.setEmail(updatedEmailValue.get().isBlank() ? null : ParserUtil.parseEmail(updatedEmailValue.get()));
+            editPersonDescriptor.setEmail(updatedEmailValue.get().isBlank() ? null
+                : ParserUtil.parseEmail(updatedEmailValue.get()));
         }
         Optional<String> updatedAddressValue = updateMultimap.getValue(PREFIX_ADDRESS);
         if (updatedAddressValue.isPresent()) {
-            editPersonDescriptor.setAddress(updatedAddressValue.get().isBlank() ? null : ParserUtil.parseAddress(updatedAddressValue.get()));
+            editPersonDescriptor.setAddress(updatedAddressValue.get().isBlank() ? null
+                : ParserUtil.parseAddress(updatedAddressValue.get()));
         }
         Optional<String> updatedPhotoValue = updateMultimap.getValue(PREFIX_PHOTO);
         if (updatedPhotoValue.isPresent()) {
-            editPersonDescriptor.setPhoto(updatedPhotoValue.get().isBlank() ? null : ParserUtil.parsePhoto(updatedPhotoValue.get()));
+            editPersonDescriptor.setPhoto(updatedPhotoValue.get().isBlank() ? null
+                : ParserUtil.parsePhoto(updatedPhotoValue.get()));
         }
         return editPersonDescriptor;
     }
