@@ -49,7 +49,7 @@ public class AddCommandTest {
         Files.createFile(sourceFile);
 
         Person validPersonWithPhoto = new PersonBuilder().withPhoto(sourceFile.toString()).build();
-        CommandResult commandResult = new AddCommand(validPersonWithPhoto).execute(modelStub);
+        CommandResult commandResult = new AddCommand(validPersonWithPhoto, tempDirPath).execute(modelStub);
         Person addedPerson = modelStub.personsAdded.get(0);
 
         assertEquals(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(addedPerson)),
@@ -77,21 +77,21 @@ public class AddCommandTest {
     }
 
     @Test
-    public void parse_personWithPhoto_success() {
-
-    }
-
-    @Test
     public void constructor_nullPerson_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new AddCommand(null));
     }
 
     @Test
-    public void execute_personAcceptedByModel_addSuccessful() throws Exception {
+    public void execute_personAcceptedByModel_addSuccessful(@TempDir Path tempDir) throws Exception {
         ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
         Person validPerson = new PersonBuilder().build();
 
-        CommandResult commandResult = new AddCommand(validPerson).execute(modelStub);
+        // Create a test directory
+        Path testImageDir = tempDir.resolve("testImages");
+        Files.createDirectory(testImageDir);
+        String testDirPath = PhotoStorageUtil.formatPath(testImageDir);
+
+        CommandResult commandResult = new AddCommand(validPerson, testDirPath).execute(modelStub);
 
         assertEquals(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
                 commandResult.getFeedbackToUser());
@@ -99,20 +99,30 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_duplicatePerson_throwsCommandException() {
+    public void execute_duplicatePerson_throwsCommandException(@TempDir Path tempDir) throws Exception {
         Person validPerson = new PersonBuilder().build();
-        AddCommand addCommand = new AddCommand(validPerson);
+
+        Path testImageDir = tempDir.resolve("testImages");
+        Files.createDirectory(testImageDir);
+        String testDirPath = PhotoStorageUtil.formatPath(testImageDir);
+
+        AddCommand addCommand = new AddCommand(validPerson, testDirPath);
         ModelStub modelStub = new ModelStubWithPerson(validPerson);
 
         assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_PERSON, () -> addCommand.execute(modelStub));
     }
 
     @Test
-    public void equals() {
+    public void equals(@TempDir Path tempDir) throws Exception {
         Person alice = new PersonBuilder().withName("Alice").build();
         Person bob = new PersonBuilder().withName("Bob").build();
-        AddCommand addAliceCommand = new AddCommand(alice);
-        AddCommand addBobCommand = new AddCommand(bob);
+
+        Path testImageDir = tempDir.resolve("testImages");
+        Files.createDirectory(testImageDir);
+        String testDirPath = PhotoStorageUtil.formatPath(testImageDir);
+
+        AddCommand addAliceCommand = new AddCommand(alice, testDirPath);
+        AddCommand addBobCommand = new AddCommand(bob, testDirPath);
 
         // same object -> returns true
         assertTrue(addAliceCommand.equals(addAliceCommand));
@@ -132,8 +142,12 @@ public class AddCommandTest {
     }
 
     @Test
-    public void toStringMethod() {
-        AddCommand addCommand = new AddCommand(ALICE);
+    public void toStringMethod(@TempDir Path tempDir) throws Exception {
+        Path testImageDir = tempDir.resolve("testImages");
+        Files.createDirectory(testImageDir);
+        String testDirPath = PhotoStorageUtil.formatPath(testImageDir);
+
+        AddCommand addCommand = new AddCommand(ALICE, testDirPath);
         String expected = AddCommand.class.getCanonicalName() + "{toAdd=" + ALICE + "}";
         assertEquals(expected, addCommand.toString());
     }

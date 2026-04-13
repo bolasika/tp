@@ -4,6 +4,7 @@ package seedu.address.commons.util;
  * Utility methods for CSV files.
  */
 public class CsvUtil {
+    private static final int PRESERVE_EMPTY_TRAILING_FIELDS = -1;
 
     /**
      * Sanitizes a string for CSV storage by escaping internal double quotes and
@@ -53,6 +54,6 @@ public class CsvUtil {
             return new String[0];
         }
 
-        return line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        return line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", PRESERVE_EMPTY_TRAILING_FIELDS);
     }
 }
