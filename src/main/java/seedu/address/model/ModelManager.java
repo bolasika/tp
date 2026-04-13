@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -140,6 +141,13 @@ public class ModelManager implements Model {
     public List<Event> getOverlappingEvent(Event event) {
         requireNonNull(event);
         return addressBook.getOverlappingEvent(event);
+    }
+
+    @Override
+    public String getNamesLinkedToEvent(Event event) {
+        requireNonNull(event);
+        List<Person> linkedPersons = addressBook.getPersonsLinkedToEvent(event);
+        return linkedPersons.stream().map(Person::getNameString).collect(Collectors.joining(", "));
     }
 
     @Override
