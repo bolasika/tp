@@ -27,13 +27,13 @@ public class EventCommandParserTest {
     @Test
     public void parse_emptyArgs_failure() {
         assertParseFailure(parser, "   ",
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EventCommandParser.MESSAGE_USAGE));
     }
 
     @Test
     public void parse_unknownSubcommand_failure() {
         assertParseFailure(parser, "xyz",
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EventCommandParser.MESSAGE_USAGE));
     }
 
     @Test
