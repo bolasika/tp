@@ -382,10 +382,10 @@ Finds persons by name, with optional additional fields used to narrow the match.
   Returns contacts named John
 
 - `find n/John t/cs2106`<br>
-  Uniquely identifies a John Doe with a cs2106 tag
+  Narrows the results to contacts named John with a cs2106 tag
 
 - `find n/John t/cs2106 t/cs2109s t/cs2103`<br>
-  Uniquely identifies a John Doe with a cs2106, cs2109s and cs2103 tag
+  Narrows the results to contacts named John with cs2106, cs2109s and cs2103 tags
 
 </box>
 
@@ -787,7 +787,7 @@ This `export` feature allows you to write contacts from NAB into 2 CSV files (`<
 - Enter `FILENAME` without specifying the `_persons.csv` or `_events.csv` extension. NAB will automatically append it for you.
 - The exported files are saved in the same directory as the current NAB data file.
   - If a file with the same name already exists, it will be overwritten.
-- Custom profile photos are not exported. During export, the profile photo header is included in the CSV to maintain schema consistency, but the field values are intentionally left blank. When imported, these blank values resolve to the default placeholder image.
+- Profile photo paths (not image files) are exported in the `Photo` column, and during import NAB uses that path if available or falls back to the default placeholder image.
 - Order of parameters does not matter.
 
 </box>

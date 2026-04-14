@@ -29,7 +29,7 @@ public class AddEventCommand extends Command {
             + "Example: event add title/CS2109S Meeting desc/Final discussion on problem set 1 "
             + "start/2026-03-25 0900 end/2026-03-25 1000 n/David Li";
 
-    private static final Logger logger = LogsCenter.getLogger(AddEventCommand.class);
+    private static final Logger LOGGER = LogsCenter.getLogger(AddEventCommand.class);
     private final Event toAdd;
     private final PersonInformation targetInfo;
 
@@ -47,47 +47,45 @@ public class AddEventCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        // Step 1: resolve target person
         Person personToEdit = CommandUtil.targetPerson(model, targetInfo);
 
-        // Case 1: Person is already linked to this event
         if (personToEdit.hasEvent(toAdd)) {
-            logger.info("AddEvent: linking existing event " + toAdd + " to " + personToEdit.getName());
+            LOGGER.info("AddEvent: linking existing event " + toAdd + " to " + personToEdit.getName());
             throw new CommandException(String.format(MESSAGE_DUPLICATE_EVENT, toAdd));
         }
 
-        // Case 2: Existing global event
         Event eventToLink;
         if (model.hasEvent(toAdd)) {
-            logger.info("AddEvent: linking existing event " + toAdd + " to " + personToEdit.getName());
+            LOGGER.info("AddEvent: linking existing event " + toAdd + " to " + personToEdit.getName());
             eventToLink = model.linkPersonToEvent(toAdd);
         } else {
-            // Case 3: Overlapping event
             List<Event> clashingEvents = model.getOverlappingEvent(toAdd);
             if (!clashingEvents.isEmpty()) {
-                logger.info("AddEvent: event clashes with existing event " + toAdd);
-                StringBuilder errorMessage = new StringBuilder(MESSAGE_CLASHING_EVENT + "\n");
-                for (Event conflict : clashingEvents) {
-                    String linkedNames = model.getNamesLinkedToEvent(conflict);
-                    errorMessage.append(String.format("• %s (Linked to %s)\n",
-                            conflict.getClashDisplayString(), linkedNames));
-                }
-                throw new CommandException(errorMessage.toString().trim());
+                collision(model, clashingEvents);
             }
-            // Case 4: New event
-            logger.info("AddEvent: creating new event " + toAdd + " for " + personToEdit.getName());
+            LOGGER.info("AddEvent: creating new event " + toAdd + " for " + personToEdit.getName());
             model.addEvent(toAdd);
             eventToLink = toAdd;
         }
 
-        // Update person's event list
         Person editedPerson = personToEdit.copyWithAddedEvent(eventToLink);
         model.setPerson(personToEdit, editedPerson);
-        logger.info("AddEvent: person updated " + personToEdit.getName()
+        LOGGER.info("AddEvent: person updated " + personToEdit.getName()
                 + ", total events=" + editedPerson.getEvents().size());
 
         model.showEventsForPerson(editedPerson);
         return new CommandResult(String.format(MESSAGE_SUCCESS, personToEdit.getName(), toAdd));
+    }
+
+    private void collision(Model model, List<Event> clashingEvents) throws CommandException {
+        LOGGER.info("AddEvent: event clashes with existing event " + toAdd);
+        StringBuilder errorMessage = new StringBuilder(MESSAGE_CLASHING_EVENT + "\n");
+        for (Event conflict : clashingEvents) {
+            String linkedNames = model.getNamesLinkedToEvent(conflict);
+            errorMessage.append(String.format("• %s (Linked to %s)\n",
+                    conflict.getClashDisplayString(), linkedNames));
+        }
+        throw new CommandException(errorMessage.toString().trim());
     }
 
     @Override

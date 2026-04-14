@@ -24,7 +24,7 @@ public class FindEventCommand extends Command {
             + "Parameters: event view n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...\n"
             + "Example: event " + COMMAND_WORD + " n/yikleong";
 
-    private static final Logger logger = LogsCenter.getLogger(FindEventCommand.class);
+    private static final Logger LOGGER = LogsCenter.getLogger(FindEventCommand.class);
     private final PersonInformation targetInfo;
 
     /**
@@ -48,7 +48,7 @@ public class FindEventCommand extends Command {
         Person matchedPerson = CommandUtil.targetPerson(model, targetInfo);
 
         model.showEventsForPerson(matchedPerson);
-        logger.info("FindEvent: matched " + matchedPerson.getName()
+        LOGGER.info("FindEvent: matched " + matchedPerson.getName()
                 + ", events=" + model.getFilteredEventList().size());
         if (model.getFilteredEventList().isEmpty()) {
             return new CommandResult(String.format(Messages.MESSAGE_NO_EVENTS_FOR_PERSON, matchedPerson.getName()));

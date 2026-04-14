@@ -83,7 +83,7 @@ public class AddEventCommandTest {
         assertTrue(modelStub.editedPerson.getEvents().contains(eventToAdd));
         assertEquals(2, modelStub.editedPerson.getEvents().size());
         assertEquals(eventToAdd, modelStub.addedEvent);
-        assertFalse(modelStub.linkCalled);
+        assertFalse(modelStub.isLinkPersonToEventCalled);
         assertEquals(modelStub.editedPerson, modelStub.shownPerson);
     }
 
@@ -104,8 +104,8 @@ public class AddEventCommandTest {
                 commandResult.getFeedbackToUser());
         assertTrue(modelStub.editedPerson.getEvents().contains(existingEvent));
         assertEquals(1, modelStub.editedPerson.getEvents().size());
-        assertTrue(modelStub.linkCalled);
-        assertFalse(modelStub.addCalled);
+        assertTrue(modelStub.isLinkPersonToEventCalled);
+        assertFalse(modelStub.isAddEventCalled);
     }
 
     @Test
@@ -162,8 +162,8 @@ public class AddEventCommandTest {
 
         assertThrows(CommandException.class, Messages.MESSAGE_MULTIPLE_MATCH, () ->
                 addEventCommand.execute(modelStub));
-        assertTrue(modelStub.filteredPersonsUpdated);
-        assertTrue(modelStub.filteredEventsUpdated);
+        assertTrue(modelStub.isFilteredPersonListUpdated);
+        assertTrue(modelStub.isFilteredEventListUpdated);
     }
 
     @Test
@@ -390,8 +390,8 @@ public class AddEventCommandTest {
         private Person editedPerson;
         private Person shownPerson;
         private Event addedEvent;
-        private boolean addCalled;
-        private boolean linkCalled;
+        private boolean isAddEventCalled;
+        private boolean isLinkPersonToEventCalled;
 
         ModelStubWithPersonNoEvent(Person person) {
             requireNonNull(person);
@@ -433,13 +433,13 @@ public class AddEventCommandTest {
 
         @Override
         public void addEvent(Event event) {
-            addCalled = true;
+            isAddEventCalled = true;
             addedEvent = event;
         }
 
         @Override
         public Event linkPersonToEvent(Event eventToAdd) {
-            linkCalled = true;
+            isLinkPersonToEventCalled = true;
             return eventToAdd;
         }
 
@@ -459,8 +459,8 @@ public class AddEventCommandTest {
         private final Event existingEvent;
         private Person editedPerson;
         private Person shownPerson;
-        private boolean addCalled;
-        private boolean linkCalled;
+        private boolean isAddEventCalled;
+        private boolean isLinkPersonToEventCalled;
 
         ModelStubWithPersonExistingEvent(Person person, Event existingEvent) {
             this.person = person;
@@ -501,12 +501,12 @@ public class AddEventCommandTest {
 
         @Override
         public void addEvent(Event event) {
-            addCalled = true;
+            isAddEventCalled = true;
         }
 
         @Override
         public Event linkPersonToEvent(Event eventToAdd) {
-            linkCalled = true;
+            isLinkPersonToEventCalled = true;
             return existingEvent;
         }
 
@@ -574,8 +574,8 @@ public class AddEventCommandTest {
 
     private class ModelStubWithMultiplePersons extends ModelStub {
         private final List<Person> persons;
-        private boolean filteredPersonsUpdated;
-        private boolean filteredEventsUpdated;
+        private boolean isFilteredPersonListUpdated;
+        private boolean isFilteredEventListUpdated;
 
         ModelStubWithMultiplePersons(List<Person> persons) {
             this.persons = persons;
@@ -588,13 +588,13 @@ public class AddEventCommandTest {
 
         @Override
         public void showMatchingPersons(java.util.Set<Person> persons) {
-            filteredPersonsUpdated = true;
-            filteredEventsUpdated = true;
+            isFilteredPersonListUpdated = true;
+            isFilteredEventListUpdated = true;
         }
 
         @Override
         public void updateFilteredPersonList(Predicate<Person> predicate) {
-            filteredPersonsUpdated = true;
+            isFilteredPersonListUpdated = true;
         }
 
         @Override
