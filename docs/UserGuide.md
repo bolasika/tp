@@ -207,8 +207,8 @@ Before examining the individual commands for managing contacts, please refer to 
     * `t/Friends` and `t/friends` are treated as 1 unique tag.
     * Tags are stored and displayed in lowercase, so `t/Friends` will appear as `friends`.
     * `n/aLeX YeOH` will match `Alex Yeoh`.<br><br>
-* Only full words will be matched
-    * e.g. `Han` will not match `Hans`.
+* Name matching behavior differs by command.
+    * For example, `find` uses full-word matching, while commands such as `edit`, `delete`, `pin`, and `unpin` require the exact full name of the contact.<br><br>
 * The token `>>` is reserved and cannot appear in contact field values.
 </box>
 
@@ -263,7 +263,7 @@ Here is what NAB looks like when you **disambiguate duplicates:**
 <br>
 
 ### Adding a person: `add`
-Build your NUS network instantly with NAB by contacts of the people you meet across modules, project groups, and CCAs.
+Build your NUS network instantly with NAB by adding contacts of the people you meet across modules, project groups, and CCAs.
 
 This `add` feature allows you to add a person to the address book.
 
@@ -294,7 +294,6 @@ This `add` feature allows you to add a person to the address book.
 - `add` command with `pfp/` succeeds only if the image file exists, is readable, and is a supported image format.
 - Contact cannot be added if the added phone number is already registered in the address book.
 - Phone number is the only contact field for which NAB enforces uniqueness. Other fields such as email, address, and tags may be shared across multiple contacts.
-- Refer to the [user disambiguation](#user-disambiguation) section if you encounter the error: `Multiple matches identified!`
 
 </box>
 
@@ -303,7 +302,7 @@ This `add` feature allows you to add a person to the address book.
 **Tip**
 
 
-Can associate 0 or more tags during the add process.
+You can associate 0 or more tags during the add process.
 
 </box>
 
@@ -352,6 +351,20 @@ Format: `edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... >> [n/NAM
 - `edit n/Alex Yeoh >> pfp/C:/Users/Alex/Pictures/profile.jpg`<br>
   Updates Alex Yeoh's profile picture.
 
+- `edit n/John Doe >> t/friend`<br>
+  Removes existing `friend` tag from John Doe (toggling-removal).
+
+</box>
+
+<box type="info">
+
+**How `pin` handles contacts sharing a name**
+
+- When multiple contacts share the same name, `pin` only considers the **unpinned** ones as candidates.
+- If exactly one unpinned match is found, it is pinned immediately; no disambiguation is needed.
+- If multiple unpinned matches are found, NAB prompts you to narrow the match with optional fields.
+- If all matching contacts are already pinned, NAB shows the error: `This contact is already pinned.`
+
 </box>
 
 <box type="important">
@@ -379,13 +392,13 @@ Finds persons by name, with optional additional fields used to narrow the match.
 
 
 - `find n/John`<br>
-  Returns contacts named John
+  Returns contacts whose names contain `John` as a full word.
 
 - `find n/John t/cs2106`<br>
-  Narrows the results to contacts named John with a cs2106 tag
+  Narrows the results to contacts whose names contain `John` as a full word and have a `cs2106` tag.
 
 - `find n/John t/cs2106 t/cs2109s t/cs2103`<br>
-  Narrows the results to contacts named John with cs2106, cs2109s and cs2103 tags
+  Narrows the results to contacts whose names contain `John` as a full word and have the `cs2106`, `cs2109s`, and `cs2103` tags.
 
 </box>
 
@@ -398,6 +411,17 @@ Finds persons by name, with optional additional fields used to narrow the match.
 - Name matching uses full words, not partial word fragments.
 - `p/`, `e/`, `a/`, and `t/` cannot be used on their own to search for a contact. They are only used to disambiguate between contacts that already match the given name.
 - If you want to retrieve contacts by context, use [`filter`](#filtering-persons-by-context-filter) with tag(s).
+
+</box>
+
+<box type="info">
+
+**How `unpin` handles contacts sharing a name**
+
+- When multiple contacts share the same name, `unpin` only considers the **pinned** ones as candidates.
+- If exactly one pinned match is found, it is unpinned immediately; no disambiguation is needed.
+- If multiple pinned matches are found, NAB prompts you to narrow the match with optional fields.
+- If all matching contacts are already unpinned, NAB shows the error: `This contact is already unpinned.`
 
 </box>
 
@@ -452,8 +476,6 @@ Pins the person identified by their name.
   <img src="images/pin_command.png" style="width: 80%;">
 </div>
 
-* Pinned persons are shown first in the full list and in filtered tag views.
-
 <box type="info">
 
 **Examples**
@@ -473,6 +495,15 @@ Pins the matching John Doe contact by name and phone number.
 
 
 See <md>:fa-solid-circle-info:</md> [User Disambiguation](#user-disambiguation).
+
+</box>
+
+<box type="success">
+
+**Tip**
+
+- If the contact is already pinned, NAB will report an error and leave the contact unchanged.
+- Pinned persons are shown first in the full list and in filtered tag views.
 
 </box>
 
@@ -501,6 +532,14 @@ Unpins the matching John Doe contact by name and phone number.
 
 
 See <md>:fa-solid-circle-info:</md> [User Disambiguation](#user-disambiguation).
+
+</box>
+
+<box type="success">
+
+**Tip**
+
+If the contact is already unpinned, NAB will report an error and leave the contact unchanged.
 
 </box>
 
@@ -751,6 +790,13 @@ Deletes an event for a specified person.
 
 See <md>:fa-solid-circle-info:</md> [User Disambiguation](#user-disambiguation).
 
+</box>
+
+<box type="success">
+
+**Tip**
+
+Deleting an event removes it from the specified contact. If other contacts are still linked to the same shared event, the event remains in NAB. If the specified contact was the last linked contact, the event is removed from NAB entirely.
 </box>
 
 ## Data and Storage

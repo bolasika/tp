@@ -108,7 +108,11 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 <box type="info" seamless>
 
-**Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline continues till the end of diagram.
+**Note:**
+
+- The lifeline for `DeleteCommandParser` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline continues till the end of diagram.
+- The internal interactions between `CommandUtil` and `Model` during target-person disambiguation are omitted from this diagram. For the detailed disambiguation flow, see [Contact Disambiguating feature](#contact-disambiguating-feature).
+- The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
 </box>
 
 How the `Logic` component works:
@@ -283,11 +287,11 @@ The following sequence diagram shows how a `pin` command flows through the `Logi
 
 <box type="info" seamless>
 
-**Note:** 
-* The lifeline for `PinCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.  
+**Note:**
+* The lifeline for `PinCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.
 * The internal interactions between `CommandUtil` and `Model` during target-person disambiguation are omitted from this diagram. For the detailed disambiguation flow, see [Contact Disambiguating feature](#contact-disambiguating-feature).
-* Unlike other targeting commands (e.g., `delete`, `edit`) that pass all matches directly to `CommandUtil#targetPersonFromMatches`, `PinCommand` first filters the matches to unpinned contacts only before invoking disambiguation. `UnpinCommand` follows the same pattern, filtering to pinned contacts first.
-
+* Unlike other targeting commands (e.g., `delete`, `edit`) that pass all matches directly to `CommandUtil#targetPersonFromMatches`, `PinCommand` first filters the matches to **unpinned contacts only** before invoking disambiguation. `UnpinCommand` follows the same pattern, filtering to **pinned contacts first**.
+* The **return** value shown at the end of the sequence diagram is a `CommandResult` object produced by the command execution.
 </box>
 
 How the `pinPerson` call is handled inside the `Model` component is shown below:
@@ -438,8 +442,8 @@ The following sequence diagram shows how an `event add` command flows through th
 
 **Note:**
 * The lifeline for `AddEventCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.
-* For clarity, the first-case duplicate-link validation `personToEdit.hasEvent(toAdd)` is omitted from this sequence diagram. If this check returns `true`, it means the target person is already linked to the event, and `AddEventCommand` immediately throws a `CommandException` without proceeding to the model-level event checks.
 * The internal interactions between `CommandUtil` and `Model` during target-person disambiguation are omitted from this diagram. For the detailed disambiguation flow, see [Contact Disambiguating feature](#contact-disambiguating-feature).
+* The **return** value shown at the end of the sequence diagram is a `CommandResult` object produced by the command execution.
 
 </box>
 
@@ -504,7 +508,7 @@ The `tag` command is intentionally designed as a bulk-assignment operation that 
 * prefers typing to mouse interactions
 
 **Value proposition**: NAB enables students to quickly organize and find saved contacts across multiple modules
-efficiently, while providing event management, tracking, and reminders.
+efficiently, while providing event management and tracking.
 
 ### User stories
 
@@ -1156,13 +1160,13 @@ Expected:
 
 Team Size: 5
 
-1. **Enhance `import` by handling exceptions gracefully**: When importing data in `overwrite` mode, preserve the existing data despite nothing valid being imported.
+1. **Enhance `import` to preserve existing data on unsuccessful imports**: Currently, if an import operation fails or produces no valid contacts, users may not be sure whether the existing address book state has been preserved. We plan to make `import` explicitly guarantee that unsuccessful imports do not alter the current data, and to make the outcome clearer in the user-facing result message.
 
-2. **Enhance `export` with the ability to back up profile photos**: When exporting data, allow for the copying of profile photos for all contacts.
+2. **Enhance `export` to optionally back up profile photos**: Currently, `export` saves contact and event data, but does not include the profile image files referenced by contacts. We plan to allow `export` to optionally copy the associated profile photos into the exported bundle as well, so that the exported data can serve as a more complete backup.
 
-3. **Enhance `event view` with the ability to sort events**: When viewing events, allow the user to sort them by start time or end time.
+3. **Enhance `event view` to support chronological sorting options**: Currently, `event view` displays the events linked to a contact without allowing the user to explicitly choose how they are ordered. We plan to add sorting options for `event view`, such as sorting by start time or end time, so users can review a contact’s events in the order most useful to them.
 
-4. **Enhance `event view` with the ability to filter events**: When viewing events, allow the user to filter them by a time range.
+4. **Enhance `event view` to support filtering by time range**: Currently, `event view` displays all events linked to a contact at once. We plan to allow users to narrow the displayed events to a specified time range, so they can focus more easily on upcoming or otherwise relevant periods without manually scanning the full list.
 
 5. **Enhance `edit` tag handling to gracefully handle duplicate tag inputs**: Currently, specifying a tag that a contact already owns in the update segment of `edit` silently removes it due to toggle semantics. The fix is to make tag inputs in the update segment strictly additive, so that providing an already-existing tag is handled gracefully by keeping it unchanged rather than removing it unexpectedly.
 
@@ -1171,3 +1175,7 @@ Team Size: 5
 7. **Enhance command parsing to gracefully handle unexpected trailing tokens**: Currently, any text typed after the last valid prefix in a command (e.g. `edit n/Alice >> p/98765432 unknownSuffix` or `edit n/Alice >> unknownSuffix p/`) is absorbed into that prefix's value by the argument tokenizer, causing a field-level validation error (e.g. an invalid phone number message) instead of an invalid command format error. The fix is to enhance the tokenizer or individual parsers to detect and reject unexpected trailing tokens with a clearer error message.
 
 8. **Enhance `import` to provide a more detailed result summary**: Currently, the import success message reports a single "skipped" count that combines both invalid rows (e.g. missing required fields) and duplicate rows (e.g. phone number already exists in NAB). The fix is to break down the skipped count into separate categories so users can clearly understand how many rows were skipped due to invalid data versus duplicates. For example: `Successfully imported save_file_persons.csv and save_file_events.csv with 3 contact(s) added, 2 contact(s) skipped (duplicate), 1 contact(s) skipped (invalid).`
+
+9. **Enhance the event list panel with an optional user-schedule mode**: Currently, the event list panel is used to display events linked to a specifically targeted contact, which is consistent with NAB’s current contact-oriented event workflow. We plan to extend the same panel with an optional user-schedule mode that shows all events in chronological order, with linked contacts indicated for each event, so that users can also review their overall schedule more efficiently.
+
+10. **Enhance `find` to support direct lookup by non-name fields**: Currently, `find` requires `n/NAME`, and email or address can only be used for disambiguation after a name match is found. We plan to allow users to search directly by email or address when the contact's name is unknown, while preserving the existing disambiguation behavior for multi-field searches.
