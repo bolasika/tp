@@ -50,6 +50,9 @@ public class FindEventCommand extends Command {
         model.showEventsForPerson(matchedPerson);
         logger.info("FindEvent: matched " + matchedPerson.getName()
                 + ", events=" + model.getFilteredEventList().size());
+        if (model.getFilteredEventList().isEmpty()) {
+            return new CommandResult(String.format(Messages.MESSAGE_NO_EVENTS_FOR_PERSON, matchedPerson.getName()));
+        }
         return new CommandResult(
                 String.format(Messages.MESSAGE_EVENTS_LISTED_OVERVIEW, model.getFilteredEventList().size()));
     }

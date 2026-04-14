@@ -192,14 +192,10 @@ public class AddEventParserTest {
     }
 
     @Test
-    public void parse_emptyDescription_success() {
-        // desc/ present but whitespace-only — should be treated as absent (Optional.empty())
-        PersonInformation expectedInfo = new PersonInformation(new Name(VALID_NAME), null, null, null, null);
-        Event expectedEvent = new Event(new Title("Meeting"), Optional.empty(), new TimeRange(VALID_START, VALID_END));
-        AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
-
-        assertParseSuccess(parser,
+    public void parse_emptyDescription_failure() {
+        // desc/ present but whitespace-only should be rejected because descriptions must not be empty if provided.
+        assertParseFailure(parser,
                 " title/Meeting desc/   start/" + VALID_START + " end/" + VALID_END + " n/" + VALID_NAME,
-                expectedCommand);
+                Description.MESSAGE_CONSTRAINTS);
     }
 }

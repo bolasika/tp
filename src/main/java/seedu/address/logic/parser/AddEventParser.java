@@ -61,7 +61,7 @@ public class AddEventParser implements Parser<AddEventCommand> {
         }
         Title title = new Title(titleStr);
         String descStr = argMultimap.getValue(PREFIX_DESC).map(String::trim).orElse(null);
-        if (descStr != null && !descStr.isEmpty() && !Description.isValidDescription(descStr)) {
+        if (descStr != null && (descStr.isEmpty() || !Description.isValidDescription(descStr))) {
             throw new ParseException(Description.MESSAGE_CONSTRAINTS);
         }
         Optional<Description> description = (descStr != null && !descStr.isEmpty())
