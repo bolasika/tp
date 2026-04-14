@@ -108,7 +108,7 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 <box type="info" seamless>
 
-**Note:** 
+**Note:**
 
 - The lifeline for `DeleteCommandParser` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline continues till the end of diagram.
 - The internal interactions between `CommandUtil` and `Model` during target-person disambiguation are omitted from this diagram. For the detailed disambiguation flow, see [Contact Disambiguating feature](#contact-disambiguating-feature).
@@ -287,8 +287,8 @@ The following sequence diagram shows how a `pin` command flows through the `Logi
 
 <box type="info" seamless>
 
-**Note:** 
-* The lifeline for `PinCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.  
+**Note:**
+* The lifeline for `PinCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.
 * The internal interactions between `CommandUtil` and `Model` during target-person disambiguation are omitted from this diagram. For the detailed disambiguation flow, see [Contact Disambiguating feature](#contact-disambiguating-feature).
 * Unlike other targeting commands (e.g., `delete`, `edit`) that pass all matches directly to `CommandUtil#targetPersonFromMatches`, `PinCommand` first filters the matches to **unpinned contacts only** before invoking disambiguation. `UnpinCommand` follows the same pattern, filtering to **pinned contacts first**.
 * The **return** value shown at the end of the sequence diagram is a `CommandResult` object produced by the command execution.
