@@ -378,11 +378,11 @@
         <div class="feature-block">
             <h2 class="feature-header" id="editing-person">Editing a person: <code>edit</code></h2>
             <p>Edits an existing person in the address book.</p>
-            <p>Format: <code>edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... -- [n/NAME] [p/PHONE_NUMBER]
+            <p>Format: <code>edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... >> [n/NAME] [p/PHONE_NUMBER]
                 [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]</code></p>
             <ul>
-                <li>The segment <b>before</b> <code>--</code> identifies which contact to edit.</li>
-                <li>The segment <b>after</b> <code>--</code> specifies fields to be updated.</li>
+                <li>The segment <b>before</b> <code>>></code> identifies which contact to edit.</li>
+                <li>The segment <b>after</b> <code>>></code> specifies fields to be updated.</li>
                 <li>Updatable fields: <code>n/NAME</code>, <code>p/PHONE_NUMBER</code>, <code>e/EMAIL</code>,
                     <code>a/ADDRESS</code>, <code>t/TAG</code>, <code>pfp/PHOTO_PATH</code></li>
                 <li><code>n/NAME</code> in the target segment is required.</li>
@@ -418,13 +418,13 @@
             </details>
             <div class="command-box">
                 <span class="code-comment"># Edits John Doe's phone and email.<br></span>
-                > edit n/John Doe -- p/91234567 e/johndoe@example.com<br><br>
+                > edit n/John Doe >> p/91234567 e/johndoe@example.com<br><br>
                 <span class="code-comment"># Uniquely identifies John Doe by phone, then updates name and tags.<br></span>
-                > edit n/John Doe p/98765432 -- n/Johnathan Doe t/teammate<br><br>
+                > edit n/John Doe p/98765432 >> n/Johnathan Doe t/teammate<br><br>
                 <span class="code-comment"># Clears all tags for Betsy Crower.<br></span>
-                > edit n/Betsy Crower -- t/<br><br>
+                > edit n/Betsy Crower >> t/<br><br>
                 <span class="code-comment"># Updates Alex Yeoh's profile picture.<br></span>
-                > edit n/Alex Yeoh -- pfp/C:/Users/Alex/Pictures/profile.jpg<br><br>
+                > edit n/Alex Yeoh >> pfp/C:/Users/Alex/Pictures/profile.jpg<br><br>
             </div>
         </div>
 
@@ -1116,8 +1116,8 @@
             <tr>
                 <td>Edit</td>
                 <td>
-                    <code>edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... -- [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]</code><br>
-                    <span class="example-text">e.g., <code>edit n/James Lee e/jameslee@example.com -- t/CS2100 pfp/images/james.jpg</code></span>
+                    <code>edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... >> [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]</code><br>
+                    <span class="example-text">e.g., <code>edit n/James Lee e/jameslee@example.com >> t/CS2100 pfp/images/james.jpg</code></span>
                 </td>
             </tr>
 
